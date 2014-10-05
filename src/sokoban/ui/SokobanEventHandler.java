@@ -40,6 +40,11 @@ public class SokobanEventHandler {
 
         ui.changeWorkspace(uiState);
     }
+    
+    public void respondToSelectLevelRequest(String level){
+        //TODO: make this method to handle events.
+        //if
+    }
 
     /**
      * This method responds to when the user presses the new game method.

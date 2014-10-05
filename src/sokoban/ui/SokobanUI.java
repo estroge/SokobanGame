@@ -167,9 +167,12 @@ public class SokobanUI extends Pane {
         String str = props.getProperty(SokobanPropertyType.INSETS);
 
         splashScreenPane = new FlowPane();
+        //splashScreenPane.setScaleY(0.1);
+        //get function for size y value smaller so height is less, then bottom will showup
 
         Image splashScreenImage = loadImage(splashScreenImagePath);
         splashScreenImageView = new ImageView(splashScreenImage);
+        splashScreenImageView.setFitHeight(700);
 
         splashScreenImageLabel = new Label();
         splashScreenImageLabel.setGraphic(splashScreenImageView);
@@ -183,7 +186,7 @@ public class SokobanUI extends Pane {
         ArrayList<String> levelImages = props
                 .getPropertyOptionsList(SokobanPropertyType.LEVEL_IMAGE_NAMES);
         //ArrayList<String> levelFiles = props
-        //        .getPropertyOptionsList(SokobanPropertyType.LEVEL_FILES);
+         //       .getPropertyOptionsList(SokobanPropertyType.LEVEL_FILES);
 
         levelSelectionPane = new HBox();
         levelSelectionPane.setSpacing(10.0);
@@ -202,23 +205,28 @@ public class SokobanUI extends Pane {
             Button levelButton = new Button();
             levelButton.setGraphic(levelImageView);
             
+            
             // CONNECT THE BUTTON TO THE EVENT HANDLER
             levelButton.setOnAction(new EventHandler<ActionEvent>() {
 
                 @Override
                 public void handle(ActionEvent event) {
-                    // TODO
-                    //eventHandler.respondToSelectLevelRequest(level);
+                    // TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    eventHandler.respondToSelectLevelRequest(level);
                 }
             });
             // TODO
-            //levelSelectionPane.getChildren().add(levelButton);
+            levelSelectionPane.getChildren().add(levelButton);
             // TODO: enable only the first level
-            levelButton.setDisable(true);
+            //levelButton.setDisable(true);
         }
 
+        mainPane.setBottom(levelSelectionPane);
         mainPane.setCenter(splashScreenPane);
-        //mainPane.setBottom(levelSelectionPane);
+       // mainPane.setCenter(levelSelectionPane);
+
+        
+        
     }
 
     /**
@@ -246,7 +254,7 @@ public class SokobanUI extends Pane {
 
         // WE'LL START OUT WITH THE GAME SCREEN
         changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
-
+ 
     }
 
     /**
