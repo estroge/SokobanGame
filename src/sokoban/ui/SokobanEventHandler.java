@@ -40,10 +40,31 @@ public class SokobanEventHandler {
 
         ui.changeWorkspace(uiState);
     }
+    //in event handler for buttons, write code to load a file for each level, 
+    //grid renderer will draw the file, so attach to the gamepanel and change 
+    //the sokoban screen to the game panel
+    //already changeworkspace method in UI
     
     public void respondToSelectLevelRequest(String level){
         //TODO: make this method to handle events.
-        //if
+        SokobanFileLoader fileLoader = new SokobanFileLoader();
+        switch(level){
+            case "Level 1": System.out.println("Level 1 selected");
+                fileLoader.FileLoader("./data/level1.sok", ui.getGSM());
+                break;
+            case "Level 2": fileLoader.FileLoader("./data/level2.sok", ui.getGSM());
+                break;
+            case "Level 3": fileLoader.FileLoader("./data/level3.sok", ui.getGSM());
+                break;
+            case "Level 4": fileLoader.FileLoader("./data/level4.sok", ui.getGSM());
+                break;
+            case "Level 5": fileLoader.FileLoader("./data/level5.sok", ui.getGSM());
+                break;
+            case "Level 6": fileLoader.FileLoader("./data/level6.sok", ui.getGSM());
+                break;
+            case "Level 7": fileLoader.FileLoader("./data/level7.sok", ui.getGSM());
+                break;
+        }
     }
 
     /**

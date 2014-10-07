@@ -15,9 +15,11 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import properties_manager.PropertiesManager;
+import sokoban.game.SokobanGameStateManager;
 import sokoban.ui.SokobanUI;
 
 public class SokobanFileLoader {
+    
     GridRenderer gridRenderer;
     private GraphicsContext gc;
     private int gridColumns;
@@ -38,6 +40,7 @@ public class SokobanFileLoader {
         Image boxImage = new Image("file:images/box.png");
         Image placeImage = new Image("file:images/place.png");
         Image sokobanImage = new Image("file:images/Sokoban.png");
+        
 
         /**
          * Default constructor.
@@ -53,9 +56,11 @@ public class SokobanFileLoader {
             gc.clearRect(0, 0, this.getWidth(), this.getHeight());
 
             // CALCULATE THE GRID CELL DIMENSIONS
-            double w = this.getWidth() / gridColumns;
+            double w = this.getWidth() / gridColumns; 
             double h = this.getHeight() / gridRows;
 
+            //in ui you make gridcols and grid rows, in this class you get those via
+            // ui.getgrid() (you have to make this class)
             gc = this.getGraphicsContext2D();
 
             // NOW RENDER EACH CELL
@@ -106,7 +111,7 @@ public class SokobanFileLoader {
 
     }
     
-    public void FileLoader(String fileName){
+    public void FileLoader(String fileName, SokobanGameStateManager gsm){ //,
         
      File fileToOpen = new File(fileName);
             try {
@@ -130,6 +135,11 @@ public class SokobanFileLoader {
                     // ORDER AND FORMAT AS WE SAVED IT
                     // FIRST READ THE GRID DIMENSIONS
                     int initGridColumns = dis.readInt();
+                    gsm.setGridColumns(initGridColumns);
+                    //3 instance vars put in GSM, with getters and setters
+                    //first just get the north toolbar and switch screen and back button working,
+                    //then load file into GSM, then grid renderer, then put renderer on mainpane in gamepanel
+                    //then perform actions on guy 
                     int initGridRows = dis.readInt();
                     int[][] newGrid = new int[initGridColumns][initGridRows];
 
@@ -137,13 +147,16 @@ public class SokobanFileLoader {
                     for (int i = 0; i < initGridColumns; i++) {
                         for (int j = 0; j < initGridRows; j++) {
                             newGrid[i][j] = dis.readInt();
+                           // System.out.println(newGrid[i][j]);
                         }
                     }
 //create the 2d array grid
+                    gridRenderer = new GridRenderer();
                     grid = newGrid;
                     gridColumns = initGridColumns;
                     gridRows = initGridRows;
                     gridRenderer.repaint();
+                    //ui.setRight(gridRenderer);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

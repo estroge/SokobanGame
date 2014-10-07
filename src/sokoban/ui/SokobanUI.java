@@ -112,12 +112,13 @@ public class SokobanUI extends Pane {
     SokobanGameStateManager gsm;
 
     public SokobanUI() {
-        gsm = new SokobanGameStateManager(this);
+        gsm = new SokobanGameStateManager(this); //only can be made once.
         eventHandler = new SokobanEventHandler(this);
         errorHandler = new SokobanErrorHandler(primaryStage);
         docManager = new SokobanDocumentManager(this);
         initMainPane();
         initSplashScreen();
+        initSokobanUI(); //added this 
     }
 
     public void SetStage(Stage stage) {
@@ -211,7 +212,7 @@ public class SokobanUI extends Pane {
 
                 @Override
                 public void handle(ActionEvent event) {
-                    // TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    // TODO!
                     eventHandler.respondToSelectLevelRequest(level);
                 }
             });
@@ -243,7 +244,8 @@ public class SokobanUI extends Pane {
         primaryStage.setTitle(title);
 
         // THEN ADD ALL THE STUFF WE MIGHT NOW USE
-        initNorthToolbar();
+        initNorthToolbar(); //just add the back button, then make the connection between select level and game pane in the mainpane
+        //use change workspace
 
         // OUR WORKSPACE WILL STORE EITHER THE GAME, STATS,
         // OR HELP UI AT ANY ONE TIME
@@ -388,8 +390,9 @@ public class SokobanUI extends Pane {
      *
      * @param uiScreen The screen to be switched to.
      */
-    public void changeWorkspace(SokobanUIState uiScreen) {
+      public void changeWorkspace(SokobanUIState uiScreen) {
         switch (uiScreen) {
+            //splash creen state, or play game state
             case VIEW_HELP_STATE:
                 mainPane.setCenter(helpPanel);
                 break;
