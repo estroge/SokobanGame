@@ -135,7 +135,8 @@ public class SokobanFileLoader {
                     // ORDER AND FORMAT AS WE SAVED IT
                     // FIRST READ THE GRID DIMENSIONS
                     int initGridColumns = dis.readInt();
-                    gsm.setGridColumns(initGridColumns);
+                    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    //gsm.setGridColumns(initGridColumns);
                     //3 instance vars put in GSM, with getters and setters
                     //first just get the north toolbar and switch screen and back button working,
                     //then load file into GSM, then grid renderer, then put renderer on mainpane in gamepanel

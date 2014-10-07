@@ -118,7 +118,7 @@ public class SokobanUI extends Pane {
         docManager = new SokobanDocumentManager(this);
         initMainPane();
         initSplashScreen();
-        initSokobanUI(); //added this 
+       // initSokobanUI(); //added this 
     }
 
     public void SetStage(Stage stage) {
@@ -214,6 +214,10 @@ public class SokobanUI extends Pane {
                 public void handle(ActionEvent event) {
                     // TODO!
                     eventHandler.respondToSelectLevelRequest(level);
+                    mainPane.setCenter(gamePanel);
+                    initSokobanUI();
+                    
+                    //changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
                 }
             });
             // TODO

@@ -48,8 +48,10 @@ public class SokobanEventHandler {
     public void respondToSelectLevelRequest(String level){
         //TODO: make this method to handle events.
         SokobanFileLoader fileLoader = new SokobanFileLoader();
+        //change workspace to game panel
         switch(level){
             case "Level 1": System.out.println("Level 1 selected");
+            
                 fileLoader.FileLoader("./data/level1.sok", ui.getGSM());
                 break;
             case "Level 2": fileLoader.FileLoader("./data/level2.sok", ui.getGSM());
