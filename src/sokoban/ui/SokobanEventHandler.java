@@ -37,7 +37,7 @@ public class SokobanEventHandler {
      * to.
      */
     public void respondToSwitchScreenRequest(SokobanUI.SokobanUIState uiState) {
-
+        System.out.println("in respond to switch screen method");
         ui.changeWorkspace(uiState);
     }
     //in event handler for buttons, write code to load a file for each level, 
@@ -51,7 +51,6 @@ public class SokobanEventHandler {
         //change workspace to game panel
         switch(level){
             case "Level 1": System.out.println("Level 1 selected");
-            
                 fileLoader.FileLoader("./data/level1.sok", ui.getGSM());
                 break;
             case "Level 2": fileLoader.FileLoader("./data/level2.sok", ui.getGSM());

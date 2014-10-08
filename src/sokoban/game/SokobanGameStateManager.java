@@ -7,6 +7,34 @@ import sokoban.ui.SokobanUI;
 
 public class SokobanGameStateManager {
 
+    private int gridColumns;
+    private int gridRows;
+    private int grid[][];
+
+    //added getters and setters and 3 vars
+    public void setGridColumns(int initGridColumns) {
+        gridColumns = initGridColumns;
+    }
+
+    public void setGridRows(int initGridRows) {
+        gridRows = initGridRows;
+    }
+    
+    public int getGridRows(){
+        return gridRows;
+    }
+    
+    public int getGridColumns(){
+        return gridColumns;
+    }
+
+    public void setGrid(int[][] newGrid) {
+        grid = newGrid;
+    }
+    
+    public int[][] getGrid(){
+        return grid;
+    }
     // THE GAME WILL ALWAYS BE IN
     // ONE OF THESE STATES
     public enum SokobanGameState {

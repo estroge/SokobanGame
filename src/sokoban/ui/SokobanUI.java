@@ -15,6 +15,7 @@ import javax.swing.text.html.HTMLDocument;
 import sokoban.file.SokobanFileLoader;
 import sokoban.game.SokobanGameData;
 import sokoban.game.SokobanGameStateManager;
+
 import application.Main.SokobanPropertyType;
 import properties_manager.PropertiesManager;
 import javafx.embed.swing.SwingNode;
@@ -118,7 +119,7 @@ public class SokobanUI extends Pane {
         docManager = new SokobanDocumentManager(this);
         initMainPane();
         initSplashScreen();
-       // initSokobanUI(); //added this 
+        //initSokobanUI(); //added this 
     }
 
     public void SetStage(Stage stage) {
@@ -214,10 +215,11 @@ public class SokobanUI extends Pane {
                 public void handle(ActionEvent event) {
                     // TODO!
                     eventHandler.respondToSelectLevelRequest(level);
-                    mainPane.setCenter(gamePanel);
-                    initSokobanUI();
+                   // mainPane.setCenter(gamePanel);
+                    initSokobanUI(); //wrong place?
                     
-                    //changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
+                    
+                    changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
                 }
             });
             // TODO
@@ -240,6 +242,7 @@ public class SokobanUI extends Pane {
      */
     public void initSokobanUI() {
         // FIRST REMOVE THE SPLASH SCREEN
+        
         mainPane.getChildren().clear();
 
         // GET THE UPDATED TITLE
@@ -253,14 +256,24 @@ public class SokobanUI extends Pane {
 
         // OUR WORKSPACE WILL STORE EITHER THE GAME, STATS,
         // OR HELP UI AT ANY ONE TIME
-        //initWorkspace();
-        //initGameScreen();
+        initWorkspace();
+        initGameScreen();
         //initStatsPane();
         //initHelpPane();
 
         // WE'LL START OUT WITH THE GAME SCREEN
         changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
  
+    }
+    
+    private void initGameScreen() {
+        
+//                    grid = newGrid;
+//                    gridColumns = initGridColumns;
+//                    gridRows = initGridRows;
+//                    
+//                   // ui.GetMainPane().setCenter(gridRenderer);
+//                    gridRenderer.repaint();
     }
 
     /**
@@ -276,21 +289,22 @@ public class SokobanUI extends Pane {
 
         // MAKE AND INIT THE GAME BUTTON
         gameButton = initToolbarButton(northToolbar,
-                SokobanPropertyType.GAME_IMG_NAME);
+                SokobanPropertyType.GAME_IMG_NAME); //actually back button
         //setTooltip(gameButton, SokobanPropertyType.GAME_TOOLTIP);
         gameButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
                 // TODO Auto-generated method stub
+                System.out.println("in event handler for back button");
                 eventHandler
-                        .respondToSwitchScreenRequest(SokobanUIState.PLAY_GAME_STATE);
+                        .respondToSwitchScreenRequest(SokobanUIState.SPLASH_SCREEN_STATE);
             }
         });
 
         // MAKE AND INIT THE STATS BUTTON
         statsButton = initToolbarButton(northToolbar,
-                SokobanPropertyType.STATS_IMG_NAME);
+                SokobanPropertyType.STATS_IMG_NAME); //actually undo button
         //setTooltip(statsButton, SokobanPropertyType.STATS_TOOLTIP);
 
         statsButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -305,7 +319,7 @@ public class SokobanUI extends Pane {
         });
         // MAKE AND INIT THE HELP BUTTON
         helpButton = initToolbarButton(northToolbar,
-                SokobanPropertyType.HELP_IMG_NAME);
+                SokobanPropertyType.HELP_IMG_NAME); //actually stats button
         //setTooltip(helpButton, SokobanPropertyType.HELP_TOOLTIP);
         helpButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -320,7 +334,7 @@ public class SokobanUI extends Pane {
 
         // MAKE AND INIT THE EXIT BUTTON
         exitButton = initToolbarButton(northToolbar,
-                SokobanPropertyType.EXIT_IMG_NAME);
+                SokobanPropertyType.EXIT_IMG_NAME); //actually time button
         //setTooltip(exitButton, SokobanPropertyType.EXIT_TOOLTIP);
         exitButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -397,6 +411,18 @@ public class SokobanUI extends Pane {
       public void changeWorkspace(SokobanUIState uiScreen) {
         switch (uiScreen) {
             //splash creen state, or play game state
+            case SPLASH_SCREEN_STATE:
+                System.out.println("in change workspace method");
+                mainPane.getChildren().clear();
+                //reput title cause in main method
+                PropertiesManager props = PropertiesManager.getPropertiesManager();
+                String title = props.getProperty(SokobanPropertyType.SPLASH_SCREEN_TITLE_TEXT);
+                primaryStage.setTitle(title);
+                mainPane.setCenter(splashScreenPane);
+                mainPane.setBottom(levelSelectionPane);
+              
+                
+                
             case VIEW_HELP_STATE:
                 mainPane.setCenter(helpPanel);
                 break;
