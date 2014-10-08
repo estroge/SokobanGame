@@ -18,10 +18,9 @@ import properties_manager.PropertiesManager;
 import sokoban.game.SokobanGameStateManager;
 import sokoban.ui.SokobanUI;
 
-//NOW THIS CLASS JUST READS FILES AND PUTS THEM INTO THE GSM. (ROWS, COLS, AND GRID)
 public class SokobanFileLoader {
     
-   // SokobanUI ui = new SokobanUI();
+    //SokobanUI ui = new SokobanUI();
     //GridRenderer gridRenderer;
     //private GraphicsContext gc;
     private int gridColumns;
@@ -77,14 +76,6 @@ public class SokobanFileLoader {
                            // System.out.println(newGrid[i][j]);
                         }
                     }
-//create the 2d array grid
-//                    gridRenderer = new GridRenderer();
-//                    grid = newGrid;
-//                    gridColumns = initGridColumns;
-//                    gridRows = initGridRows;
-//                    
-//                   // ui.GetMainPane().setCenter(gridRenderer);
-//                    gridRenderer.repaint();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

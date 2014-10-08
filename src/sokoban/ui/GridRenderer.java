@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sokoban.game;
+package sokoban.ui;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,10 +15,11 @@ import javafx.scene.paint.Color;
  * @author etroge
  */
 class GridRenderer extends Canvas {
-private GraphicsContext gc;
+    private GraphicsContext gc;
     private int gridColumns;
     private int gridRows;
     private int grid[][];
+
         // PIXEL DIMENSIONS OF EACH CELL
         int cellWidth;
         int cellHeight;
@@ -34,12 +35,12 @@ private GraphicsContext gc;
          * Default constructor.
          */
         public GridRenderer() {
-            this.setWidth(500);
-            this.setHeight(500);
-            repaint();
+            this.setWidth(700);
+            this.setHeight(700);
+            //repaint();
         }
 
-        public void repaint() {
+        public void repaint(int gridColumns, int gridRows, int[][] grid) {
             gc = this.getGraphicsContext2D();
             gc.clearRect(0, 0, this.getWidth(), this.getHeight());
 

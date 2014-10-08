@@ -15,7 +15,6 @@ import javax.swing.text.html.HTMLDocument;
 import sokoban.file.SokobanFileLoader;
 import sokoban.game.SokobanGameData;
 import sokoban.game.SokobanGameStateManager;
-
 import application.Main.SokobanPropertyType;
 import properties_manager.PropertiesManager;
 import javafx.embed.swing.SwingNode;
@@ -267,13 +266,11 @@ public class SokobanUI extends Pane {
     }
     
     private void initGameScreen() {
+        GridRenderer gridRenderer = new GridRenderer();
+                    
+        gridRenderer.repaint(getGSM().getGridColumns(),getGSM().getGridRows(), getGSM().getGrid());
+        gamePanel.setCenter(gridRenderer);
         
-//                    grid = newGrid;
-//                    gridColumns = initGridColumns;
-//                    gridRows = initGridRows;
-//                    
-//                   // ui.GetMainPane().setCenter(gridRenderer);
-//                    gridRenderer.repaint();
     }
 
     /**
