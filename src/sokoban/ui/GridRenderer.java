@@ -86,7 +86,7 @@ class GridRenderer extends Canvas {
                     x += xInc;
                     y += yInc;
                     gc.setFill(Color.RED);
-                    gc.fillText(numToDraw, x, y);
+                  //  gc.fillText(numToDraw, x, y);
                     x -= xInc;
                     y -= yInc;
 

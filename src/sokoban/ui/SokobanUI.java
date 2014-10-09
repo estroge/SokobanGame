@@ -28,6 +28,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import javafx.scene.layout.Background;
@@ -108,8 +109,9 @@ public class SokobanUI extends Pane {
     private SokobanEventHandler eventHandler;
     private SokobanErrorHandler errorHandler;
     private SokobanDocumentManager docManager;
-
+    GridRenderer gridRenderer = new GridRenderer();
     SokobanGameStateManager gsm;
+    private boolean canMove;
 
     public SokobanUI() {
         gsm = new SokobanGameStateManager(this); //only can be made once.
@@ -156,6 +158,134 @@ public class SokobanUI extends Pane {
                 .getProperty(SokobanPropertyType.WINDOW_HEIGHT));
         mainPane.resize(paneWidth, paneHeigth);
         mainPane.setPadding(marginlessInsets);
+        
+        //put arrows here
+        mainPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent ke) {
+                //System.out.println("Key Pressed: " + ke.getCode());
+                boolean nextIsBox = false;
+                outerloop:
+                if(ke.getCode().equals(KeyCode.UP)){
+                    for (int i = 0; i < gsm.getGridColumns(); i++) {
+                        for (int j = 0; j < gsm.getGridRows(); j++) {
+                            if(gsm.getGrid()[i][j] == 4){
+                                //gsm.getGrid()[i][j] = 0;
+                                nextIsBox = checkUp(gsm.getGrid(), i, j);
+                                //check if can move, then check if next is box
+                                if(canMove == true && nextIsBox == false){
+                                    gsm.getGrid()[i][j] = 0;
+                                    gsm.getGrid()[i][j-1] = 4;
+                                }
+                                if(canMove == true && nextIsBox == true){
+                                    gsm.getGrid()[i][j] = 0;
+                                    gsm.getGrid()[i][j-2] = 2;
+                                    gsm.getGrid()[i][j-1] = 4;
+                                }                              
+                                //make boolean class var, switch statement, if true, check case, 2 cases
+                                //make second copy of grid, everytime he moves compare with old grid, to repaint red dots
+                             
+                                gridRenderer.repaint(gsm.getGridColumns(),gsm.getGridRows(), gsm.getGrid());
+                                break outerloop;
+                        }
+                        }
+                    }
+                    //go through grid find 4 the guy and then move him in the direction
+                    //store guys pos as var to know here he is at all time
+                    //nested for loop, find guy, sotre in var, method to check everything around
+                    //cases wall box red point empty 0-4, box has sub cases, if pushing box into box or box into wall
+                    //change value in grid 
+                    //then call grid rend to repaint
+                }
+                if(ke.getCode().equals(KeyCode.DOWN)){
+                    outerloop:
+                    for (int i = 0; i < gsm.getGridColumns(); i++) {
+                        for (int j = 0; j < gsm.getGridRows(); j++) {
+                            if(gsm.getGrid()[i][j] == 4){
+                                gsm.getGrid()[i][j] = 0;
+                                    System.out.println(i + " " + j);
+                                gsm.getGrid()[i][j+1] = 4;
+                                    System.out.println(i + " " + j);
+                                gridRenderer.repaint(gsm.getGridColumns(),gsm.getGridRows(), gsm.getGrid());
+                                break outerloop;
+                        }
+                        }
+                    }
+                }
+                if(ke.getCode().equals(KeyCode.LEFT)){
+                    outerloop:
+                    for (int i = 0; i < gsm.getGridColumns(); i++) {
+                        for (int j = 0; j < gsm.getGridRows(); j++) {
+                            if(gsm.getGrid()[i][j] == 4){
+                                gsm.getGrid()[i][j] = 0;
+                                System.out.println(i + " " + j);
+                                gsm.getGrid()[i-1][j] = 4;
+                                System.out.println(i + " " + j);
+                                gridRenderer.repaint(gsm.getGridColumns(),gsm.getGridRows(), gsm.getGrid());
+                                break outerloop;
+                        }
+                        }
+                    }
+                }
+                if(ke.getCode().equals(KeyCode.RIGHT)){
+                    outerloop:
+                    for (int i = 0; i < gsm.getGridColumns(); i++) {
+                        for (int j = 0; j < gsm.getGridRows(); j++) {
+                            if(gsm.getGrid()[i][j] == 4){
+                                gsm.getGrid()[i][j] = 0; //have to change this
+                                //have keep track of red points right in the beginning of the game
+                                //so win when all boxes are over red points
+                                //method runs once to find all red points
+                                //when guy moves off red point resets to red points
+                                //box can overwrite red points to win all red points, must have boxes
+                                //if box, have to check beyond box
+                                System.out.println(i + " " + j);
+                                gsm.getGrid()[i+1][j] = 4;
+                                System.out.println(i + " " + j);
+                                gridRenderer.repaint(gsm.getGridColumns(),gsm.getGridRows(), gsm.getGrid());
+                                break outerloop;
+                        }
+                        }
+                    }
+                }
+               }
+            
+            //make flag
+            //wall first, then check box (j-2), if 0 can move, if 1 cannot
+            //else move 
+            //boolean returns true if can move and is a box
+            //canMove says if player can move to next position
+            private boolean checkUp(int grid[][], int i, int j) {
+                //if theres a wall
+                if(grid[i][j-1] == 1){
+                    canMove = false;
+                    return false;
+                }
+                //if box behind box
+                else if(grid[i][j-1] == 2 && grid[i][j-2] == 2){
+                    canMove = false;
+                    return false;
+                }
+                //if wall behind box
+                else if(grid[i][j-1] == 2 && grid[i][j-2] == 1){
+                    canMove = false;
+                    return false;
+                }
+                //if next square is empty and not a box
+                else if(grid[i][j-1] == 0){
+                    canMove = true;
+                    return false;
+                }
+                //if just box
+                else if(grid[i][j-1] == 2){
+                    canMove = true;
+                    return true;
+                }
+                //any other condition
+                else return false;
+            }
+            });
+    
+        
     }
 
     public void initSplashScreen() {
@@ -187,7 +317,7 @@ public class SokobanUI extends Pane {
         ArrayList<String> levelImages = props
                 .getPropertyOptionsList(SokobanPropertyType.LEVEL_IMAGE_NAMES);
         //ArrayList<String> levelFiles = props
-         //       .getPropertyOptionsList(SokobanPropertyType.LEVEL_FILES);
+        //       .getPropertyOptionsList(SokobanPropertyType.LEVEL_FILES);
 
         levelSelectionPane = new HBox();
         levelSelectionPane.setSpacing(10.0);
@@ -205,8 +335,7 @@ public class SokobanUI extends Pane {
             // AND BUILD THE BUTTON
             Button levelButton = new Button();
             levelButton.setGraphic(levelImageView);
-            
-            
+
             // CONNECT THE BUTTON TO THE EVENT HANDLER
             levelButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -214,10 +343,9 @@ public class SokobanUI extends Pane {
                 public void handle(ActionEvent event) {
                     // TODO!
                     eventHandler.respondToSelectLevelRequest(level);
-                   // mainPane.setCenter(gamePanel);
+                    // mainPane.setCenter(gamePanel);
                     initSokobanUI(); //wrong place?
-                    
-                    
+
                     changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
                 }
             });
@@ -231,8 +359,6 @@ public class SokobanUI extends Pane {
         mainPane.setCenter(splashScreenPane);
        // mainPane.setCenter(levelSelectionPane);
 
-        
-        
     }
 
     /**
@@ -241,7 +367,7 @@ public class SokobanUI extends Pane {
      */
     public void initSokobanUI() {
         // FIRST REMOVE THE SPLASH SCREEN
-        
+
         mainPane.getChildren().clear();
 
         // GET THE UPDATED TITLE
@@ -262,15 +388,15 @@ public class SokobanUI extends Pane {
 
         // WE'LL START OUT WITH THE GAME SCREEN
         changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
- 
+
     }
-    
+
     private void initGameScreen() {
-        GridRenderer gridRenderer = new GridRenderer();
-                    
-        gridRenderer.repaint(getGSM().getGridColumns(),getGSM().getGridRows(), getGSM().getGrid());
+        //GridRenderer gridRenderer = new GridRenderer();
+
+        gridRenderer.repaint(getGSM().getGridColumns(), getGSM().getGridRows(), getGSM().getGrid());
         gamePanel.setCenter(gridRenderer);
-        
+
     }
 
     /**
@@ -393,7 +519,6 @@ public class SokobanUI extends Pane {
         System.out.println("in the initWorkspace");
     }
 
-
     public Image loadImage(String imageName) {
         Image img = new Image(ImgPath + imageName);
         return img;
@@ -405,21 +530,24 @@ public class SokobanUI extends Pane {
      *
      * @param uiScreen The screen to be switched to.
      */
-      public void changeWorkspace(SokobanUIState uiScreen) {
+    public void changeWorkspace(SokobanUIState uiScreen) {
         switch (uiScreen) {
             //splash creen state, or play game state
             case SPLASH_SCREEN_STATE:
                 System.out.println("in change workspace method");
                 mainPane.getChildren().clear();
                 //reput title cause in main method
+                
                 PropertiesManager props = PropertiesManager.getPropertiesManager();
                 String title = props.getProperty(SokobanPropertyType.SPLASH_SCREEN_TITLE_TEXT);
                 primaryStage.setTitle(title);
-                mainPane.setCenter(splashScreenPane);
+           
+                
+                //initSplashScreen();
                 mainPane.setBottom(levelSelectionPane);
-              
-                
-                
+                mainPane.setCenter(splashScreenPane);
+                break;
+
             case VIEW_HELP_STATE:
                 mainPane.setCenter(helpPanel);
                 break;
@@ -433,6 +561,5 @@ public class SokobanUI extends Pane {
         }
 
     }
-
 
 }

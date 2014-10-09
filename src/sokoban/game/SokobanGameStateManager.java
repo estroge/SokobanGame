@@ -19,34 +19,37 @@ public class SokobanGameStateManager {
     public void setGridRows(int initGridRows) {
         gridRows = initGridRows;
     }
-    
-    public int getGridRows(){
+
+    public int getGridRows() {
         return gridRows;
     }
-    
-    public int getGridColumns(){
+
+    public int getGridColumns() {
         return gridColumns;
     }
 
     public void setGrid(int[][] newGrid) {
         grid = newGrid;
     }
-    
-    public int[][] getGrid(){
+
+    public int[][] getGrid() {
         return grid;
     }
+
     // THE GAME WILL ALWAYS BE IN
     // ONE OF THESE STATES
+
     public enum SokobanGameState {
+
         GAME_NOT_STARTED, GAME_IN_PROGRESS, GAME_OVER,
-        LEVEL1, 
-        LEVEL2, 
-        LEVEL3, 
-        LEVEL4, 
-        LEVEL5, 
-        LEVEL6, 
-        LEVEL7 
-        
+        LEVEL1,
+        LEVEL2,
+        LEVEL3,
+        LEVEL4,
+        LEVEL5,
+        LEVEL6,
+        LEVEL7
+
     }
 
     // STORES THE CURRENT STATE OF THIS GAME
