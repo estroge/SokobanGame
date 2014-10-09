@@ -225,10 +225,19 @@ public class SokobanUI extends Pane {
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
                             if(gsm.getGrid()[i][j] == 4){
-                                gsm.getGrid()[i][j] = 0;
-                                System.out.println(i + " " + j);
-                                gsm.getGrid()[i-1][j] = 4;
-                                System.out.println(i + " " + j);
+                                nextIsBox = checkLeft(gsm.getGrid(), i, j);
+                                //gsm.getGrid()[i][j] = 0;
+                                //check if can move, then check if next is box
+                                if(canMove == true && nextIsBox == false){
+                                    gsm.getGrid()[i][j] = 0;
+                                    gsm.getGrid()[i-1][j] = 4;
+                                }
+                                if(canMove == true && nextIsBox == true){
+                                    gsm.getGrid()[i][j] = 0;
+                                    gsm.getGrid()[i-2][j] = 2;
+                                    gsm.getGrid()[i-1][j] = 4;
+                                }
+                                //System.out.println(i + " " + j);
                                 gridRenderer.repaint(gsm.getGridColumns(),gsm.getGridRows(), gsm.getGrid());
                                 break outerloop;
                         }
@@ -316,6 +325,36 @@ public class SokobanUI extends Pane {
                 }
                 //if just box
                 else if(grid[i][j+1] == 2){
+                    canMove = true;
+                    return true;
+                }
+                //any other condition
+                else return false;
+            }
+
+            private boolean checkLeft(int[][] grid, int i, int j) {
+                //if theres a wall
+                if(grid[i-1][j] == 1){
+                    canMove = false;
+                    return false;
+                }
+                //if box behind box
+                else if(grid[i-1][j] == 2 && grid[i-2][j] == 2){
+                    canMove = false;
+                    return false;
+                }
+                //if wall behind box
+                else if(grid[i-1][j] == 2 && grid[i-2][j] == 1){
+                    canMove = false;
+                    return false;
+                }
+                //if next square is empty and not a box
+                else if(grid[i-1][j] == 0){
+                    canMove = true;
+                    return false;
+                }
+                //if just box
+                else if(grid[i-1][j] == 2){
                     canMove = true;
                     return true;
                 }
