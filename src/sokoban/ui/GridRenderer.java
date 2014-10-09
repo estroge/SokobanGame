@@ -59,11 +59,11 @@ class GridRenderer extends Canvas {
                 for (int j = 0; j < gridRows; j++) {
                     // DRAW THE CELL
                     gc.setFill(Color.LIGHTBLUE);
-                    gc.strokeRoundRect(x, y, w, h, 10, 10);
+                    //gc.strokeRoundRect(x, y, w, h, 10, 10);
 
                     switch (grid[i][j]) {
                         case 0:
-                            gc.strokeRoundRect(x, y, w, h, 10, 10);
+                            //gc.strokeRoundRect(x, y, w, h, 10, 10);
                             break;
                         case 1:
                             gc.drawImage(wallImage, x, y, w, h);

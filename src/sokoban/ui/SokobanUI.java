@@ -24,6 +24,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -42,7 +43,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javax.swing.Action;
 import javax.swing.JScrollPane;
 
 public class SokobanUI extends Pane {
@@ -115,9 +118,9 @@ public class SokobanUI extends Pane {
     SokobanGameStateManager gsm;
     private boolean canMove;
     ArrayList<List<Integer>> redPointsInLevel = new ArrayList<>();
+    
     ArrayList<List<Integer>> sokobanPosition = new ArrayList<>();
-    //int iGuyPos = -1;
-    //int jGuyPos = -1;
+
 
     public SokobanUI() {
         gsm = new SokobanGameStateManager(this); //only can be made once.
@@ -361,6 +364,59 @@ public class SokobanUI extends Pane {
                         }
                     }
                 }
+                //now see if all boxes are on all red points
+                //make an arraylist of boxes moving as well? how to undo?
+                //loop, if all red points in array have boxes on top the win dialog should pop up
+                int redPointsCounter = 0;
+                for(int t = 0; t < redPointsInLevel.size(); t++){
+                    if(gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)] == 2){
+                        redPointsCounter++;
+                    }  
+                }
+                if(redPointsCounter == redPointsInLevel.size()){
+                    System.out.println("YOU WIN!");
+                    respondToWin(primaryStage);
+                    
+                    //now make popup box!!!
+                }
+            }
+            
+            public void respondToWin(Stage primaryStage) {
+                // ENGLIS IS THE DEFAULT
+                String options[] = new String[]{"Yes", "No"};
+                PropertiesManager props = PropertiesManager.getPropertiesManager();
+                options[0] = props.getProperty(SokobanPropertyType.DEFAULT_YES_TEXT);
+                options[1] = props.getProperty(SokobanPropertyType.DEFAULT_NO_TEXT);
+                String verifyExit = props.getProperty(SokobanPropertyType.WIN_DISPLAY_TEXT);
+
+                // FIRST MAKE SURE THE USER REALLY WANTS TO EXIT
+                Stage dialogStage = new Stage();
+                dialogStage.initModality(Modality.WINDOW_MODAL);
+                dialogStage.initOwner(primaryStage);
+                BorderPane exitPane = new BorderPane();
+                HBox optionPane = new HBox();
+                Button yesButton = new Button(options[0]);
+                Button noButton = new Button(options[1]);
+                optionPane.setSpacing(25.0);
+                optionPane.setAlignment(Pos.CENTER);
+                optionPane.getChildren().addAll(yesButton, noButton);
+                Label exitLabel = new Label(verifyExit);
+                exitPane.setCenter(exitLabel);
+
+                exitPane.setBottom(optionPane);
+                Scene scene = new Scene(exitPane, 380, 200);
+                dialogStage.setScene(scene);
+                dialogStage.show();
+                // WHAT'S THE USER'S DECISION?
+                yesButton.setOnAction(e -> {
+                    //CHANGE TO GO BACK TO SPLASH SCRREN
+                    changeWorkspace(SokobanUIState.SPLASH_SCREEN_STATE);
+                    dialogStage.close();
+                });
+                noButton.setOnAction(e -> {
+                    dialogStage.close();
+                });
+
             }
 
             //make flag

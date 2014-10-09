@@ -16,6 +16,7 @@
         <property name="DEFAULT_YES_TEXT"           value="Yes"></property>
         <property name="DEFAULT_NO_TEXT"            value="No"></property>
         <property name="DEFAULT_EXIT_TEXT"          value="Are you sure you wish to Quit?"></property>
+        <property name="WIN_DISPLAY_TEXT"           value="YOU WON! Go back to the home screen?"></property>
         <property name="GAME_IMG_NAME"              value="backButton.png"></property>
         <property name="STATS_IMG_NAME"             value="undoButton.png"></property>
         <property name="HELP_IMG_NAME"              value="statsButton.png"></property>
