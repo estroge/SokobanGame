@@ -21,6 +21,9 @@
         <property name="HELP_IMG_NAME"              value="statsButton.png"></property>
         <property name="EXIT_IMG_NAME"              value="timeButton.png"></property>
         <property name="GAME_TITLE_TEXT"            value="Game Time!"></property>
+        <property name="STATS_PANE_TEXT"            value="Your Stats"></property>
+        <property name="STATS_FILE_NAME"            value="EN_StatsDisplay.html"></property>
+        
     </property_list>
     <property_options_list>
         <property_options name="LEVEL_OPTIONS">

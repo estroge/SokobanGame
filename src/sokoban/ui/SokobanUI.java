@@ -572,7 +572,7 @@ public class SokobanUI extends Pane {
         initWorkspace();
         initGameScreen();
         //initStatsPane();
-        //initHelpPane();
+        initHelpPane();
 
         // WE'LL START OUT WITH THE GAME SCREEN
         changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
@@ -583,6 +583,41 @@ public class SokobanUI extends Pane {
         gridRenderer.repaint(getGSM().getGridColumns(), getGSM().getGridRows(), getGSM().getGrid());
         gamePanel.setCenter(gridRenderer);
 
+    }
+    
+    private void initHelpPane() {
+        // WE'LL DISPLAY ALL STATS IN A JEditorPane
+        statsPane = new JEditorPane();
+        statsPane.setEditable(false);
+        statsPane.setContentType("text/html");
+
+        // LOAD THE STARTING STATS PAGE, WHICH IS JUST AN OUTLINE
+        // AND DOESN"T HAVE ANY OF THE STATS, SINCE THOSE WILL 
+        // BE DYNAMICALLY ADDED
+        loadPage(statsPane, SokobanPropertyType.STATS_FILE_NAME);
+        HTMLDocument statsDoc = (HTMLDocument) statsPane.getDocument();
+        docManager.setStatsDoc(statsDoc);
+        SwingNode swingNode = new SwingNode();
+        JScrollPane statJScrollPane = new JScrollPane(statsPane);
+        swingNode.setContent(statJScrollPane);
+        statsScrollPane = new ScrollPane();
+        statsScrollPane.setContent(swingNode);
+        statsScrollPane.setFitToHeight(true);
+        statsScrollPane.setFitToWidth(true);
+
+    }
+        private void loadPage(JEditorPane jep, SokobanPropertyType fileProperty) {
+        // GET THE FILE NAME
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        String fileName = props.getProperty(fileProperty);
+        try {
+            // LOAD THE HTML INTO THE EDITOR PANE
+            String fileHTML = SokobanFileLoader.loadTextFile(fileName);
+            jep.setText(fileHTML);
+        } catch (IOException ioe) {
+            errorHandler.processError(SokobanPropertyType.INVALID_URL_ERROR_TEXT);
+        }
+    
     }
 
     /**
@@ -596,13 +631,14 @@ public class SokobanUI extends Pane {
         northToolbar.setPadding(marginlessInsets);
         northToolbar.setSpacing(10.0);
 
-        // MAKE AND INIT THE GAME BUTTON
+        //BACK BUTTON
         gameButton = initToolbarButton(northToolbar,
                 SokobanPropertyType.GAME_IMG_NAME); //actually back button
         //setTooltip(gameButton, SokobanPropertyType.GAME_TOOLTIP);
         gameButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
+            //BACK TO SPLASH SCREEN BUTTON
             public void handle(ActionEvent event) {
                 // TODO Auto-generated method stub
                 System.out.println("in event handler for back button");
@@ -611,7 +647,7 @@ public class SokobanUI extends Pane {
             }
         });
 
-        // MAKE AND INIT THE STATS BUTTON
+        // UNDO BUTTON
         statsButton = initToolbarButton(northToolbar,
                 SokobanPropertyType.STATS_IMG_NAME); //actually undo button
         //setTooltip(statsButton, SokobanPropertyType.STATS_TOOLTIP);
@@ -626,22 +662,21 @@ public class SokobanUI extends Pane {
             }
 
         });
-        // MAKE AND INIT THE HELP BUTTON
+        // STATS BUTTON
         helpButton = initToolbarButton(northToolbar,
-                SokobanPropertyType.HELP_IMG_NAME); //actually stats button
+                SokobanPropertyType.HELP_IMG_NAME);
         //setTooltip(helpButton, SokobanPropertyType.HELP_TOOLTIP);
         helpButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                // TODO Auto-generated method stub
                 eventHandler
                         .respondToSwitchScreenRequest(SokobanUIState.VIEW_HELP_STATE);
             }
 
         });
 
-        // MAKE AND INIT THE EXIT BUTTON
+        // TIMER/ EXIT BUTTON
         exitButton = initToolbarButton(northToolbar,
                 SokobanPropertyType.EXIT_IMG_NAME); //actually time button
         //setTooltip(exitButton, SokobanPropertyType.EXIT_TOOLTIP);
@@ -732,9 +767,11 @@ public class SokobanUI extends Pane {
                 mainPane.setBottom(levelSelectionPane);
                 mainPane.setCenter(splashScreenPane);
                 break;
-
+            //ACTUALLY THE STATS PANE
             case VIEW_HELP_STATE:
-                mainPane.setCenter(helpPanel);
+                props = PropertiesManager.getPropertiesManager();
+                primaryStage.setTitle(props.getProperty(SokobanPropertyType.STATS_PANE_TEXT));
+                mainPane.setCenter(statsScrollPane);
                 break;
                 
             case PLAY_GAME_STATE:
@@ -743,9 +780,9 @@ public class SokobanUI extends Pane {
                 findAllRedPoints();
                 findSokobanPosition();
                 break;
-
+            //ACTUALLY THE UNDO BUTTON SO NO NEED FOR THIS CASE
             case VIEW_STATS_STATE:
-                mainPane.setCenter(statsScrollPane);
+                //mainPane.setCenter(statsScrollPane);
                 break;
             default:
         }

@@ -54,6 +54,26 @@ public class SokobanGameStateManager {
 
     // STORES THE CURRENT STATE OF THIS GAME
     private SokobanGameState currentGameState;
+    
+    public int getGameState(){
+        switch(currentGameState){
+            case LEVEL1:
+                return 1;
+            case LEVEL2:
+                return 2;
+            case LEVEL3:
+                return 3;
+            case LEVEL4:
+                return 4;
+            case LEVEL5:
+                return 5;
+            case LEVEL6:
+                return 6;
+            case LEVEL7:
+                return 7;
+            default: return 0;
+        }
+    }
 
     // WHEN THE STATE OF THE GAME CHANGES IT WILL NEED TO BE
     // REFLECTED IN THE USER INTERFACE, SO THIS CLASS NEEDS
