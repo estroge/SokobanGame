@@ -74,6 +74,10 @@ public class SokobanGameStateManager {
             default: return 0;
         }
     }
+    
+    public void setGameState(SokobanGameState currentGameState){
+        this.currentGameState = currentGameState;
+    }
 
     // WHEN THE STATE OF THE GAME CHANGES IT WILL NEED TO BE
     // REFLECTED IN THE USER INTERFACE, SO THIS CLASS NEEDS
@@ -83,9 +87,10 @@ public class SokobanGameStateManager {
     // THIS IS THE GAME CURRENTLY BEING PLAYED
     private SokobanGameData gameInProgress;
 
-    // HOLDS ALL OF THE COMPLETED GAMES. NOTE THAT THE GAME
-    // IN PROGRESS IS NOT ADDED UNTIL IT IS COMPLETED
-    private ArrayList<SokobanGameData> gamesHistory;
+    // statistics
+    public int[] played = new int[8]; // one element per level
+    public int[] wins = new int[8];
+    public long[] fastest_win = new long[8];
 
     private final String NEWLINE_DELIMITER = "\n";
 
@@ -95,9 +100,6 @@ public class SokobanGameStateManager {
         // WE HAVE NOT STARTED A GAME YET
         currentGameState = SokobanGameState.GAME_NOT_STARTED;
 
-        // NO GAMES HAVE BEEN PLAYED YET, BUT INITIALIZE
-        // THE DATA STRCUTURE FOR PLACING COMPLETED GAMES
-        gamesHistory = new ArrayList();
 
         // THE FIRST GAME HAS NOT BEEN STARTED YET
         gameInProgress = null;
@@ -120,17 +122,7 @@ public class SokobanGameStateManager {
      * session.
      */
     public int getGamesPlayed() {
-        return gamesHistory.size();
-    }
-
-    /**
-     * Accessor method for getting all the games that have been completed.
-     *
-     * @return An Iterator that allows one to go through all the games that have
-     * been played so far.
-     */
-    public Iterator<SokobanGameData> getGamesHistoryIterator() {
-        return gamesHistory.iterator();
+        return played[getGameState()];
     }
 
     /**
@@ -168,20 +160,7 @@ public class SokobanGameStateManager {
      * won.
      */
     public int getWins() {
-        // ITERATE THROUGH ALL THE COMPLETED GAMES
-        Iterator<SokobanGameData> it = gamesHistory.iterator();
-        int wins = 0;
-        while (it.hasNext()) {
-            // GET THE NEXT GAME IN THE SEQUENCE
-            SokobanGameData game = it.next();
-
-            // TODO
-            // IF IT ENDED IN A WIN, INC THE COUNTER
-            if (game.isWon()) {
-                wins++;
-            }
-        }
-        return wins;
+        return wins[getGameState()];
     }
 
     /**
@@ -191,20 +170,7 @@ public class SokobanGameStateManager {
      * lost.
      */
     public int getLosses() {
-        // ITERATE THROUGH ALL THE COMPLETED GAMES
-        Iterator<SokobanGameData> it = gamesHistory.iterator();
-        int losses = 0;
-        while (it.hasNext()) {
-            // GET THE NEXT GAME IN THE SEQUENCE
-            SokobanGameData game = it.next();
-
-            // TODO
-            // IF IT ENDED IN A LOSS, INC THE COUNTER
-            if (game.isLost()) {
-                losses++;
-            }
-        }
-        return losses;
+        return played[getGameState()] - wins[getGameState()];
     }
 
     /**
@@ -214,37 +180,13 @@ public class SokobanGameStateManager {
      * @return The completed game that the player won requiring the least amount
      * of time.
      */
-    public SokobanGameData getFastestWin() {
-        // IF NO GAMES HAVE BEEN PLAYED, THERE IS
-        // NOTHING TO RETURN
-        if (gamesHistory.isEmpty()) {
-            return null;
+    public long getFastestWin() {
+        if (played[getGameState()] == 0) {
+            return 0;
         }
 
-        // NOTE THAT ALL THE GAMES PLAYED MAY BE LOSSES
-        SokobanGameData fastest = null;
-
-        // GO THROUGH ALL THE GAMES THAT HAVE BEEN PLAYED
-        Iterator<SokobanGameData> it = gamesHistory.iterator();
-        while (it.hasNext()) {
-            // GET THE NEXT GAME IN THE SEQUENCE
-            SokobanGameData game = it.next();
-
-            // WE ONLY CONSIDER GAMES THAT WERE WON
-            if (game.isWon()) {
-                // IF IT'S THE FIRST WIN FOUND, START OUT
-                // WITH IT AS THE FASTEST UNTIL WE FIND ONE BETTER
-                if (fastest == null) {
-                    fastest = game;
-                } // OTHERWISE IF IT IS FASTER THEN
-                // MAKE IT THE FASTEST           
-                else if (game.getTimeOfGame() < fastest.getTimeOfGame()) {
-                    fastest = game;
-                }
-            }
-        }
         // RETURN THE FASTEST GAME
-        return fastest;
+        return fastest_win[getGameState()];
     }
 
     /**
@@ -254,12 +196,10 @@ public class SokobanGameStateManager {
      * this change of state such that it may reflect this change.
      */
     public void startNewGame() {
-        // IS THERE A GAME ALREADY UNDERWAY?
-        // YES, SO END THAT GAME AS A LOSS
-        if (!isGameNotStarted() && (!gamesHistory.contains(gameInProgress))) {
-            gamesHistory.add(gameInProgress);
-        }
+        played[getGameState()]++;
 
+        // TODO: call the FileLoader to load all the level histories from a file: statistics.data
+        
         // IF THERE IS A GAME IN PROGRESS AND THE PLAYER HASN'T WON, THAT MEANS
         // THE PLAYER IS QUITTING, SO WE NEED TO SAVE THE GAME TO OUR HISTORY
         // DATA STRUCTURE. NOTE THAT IF THE PLAYER WON THE GAME, IT WOULD HAVE

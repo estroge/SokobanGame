@@ -87,66 +87,7 @@ public class SokobanDocumentManager {
         statsDoc = initStatsDoc;
     }
 
-    /**
-     * This method lets us add a guess to the game page display without having
-     * to rebuild the entire page. We just add it to the HTML list of guesses
-     * made so far this game.
-     *
-     * @param guess Guess letter .
-     * @param newGuessMatch The so-far-guessed word,with correct letters and
-     * underlines .
-     */
-//    public void addGuessToGamePage(String guess, String newGuessMatch) {
-//        PropertiesManager props = PropertiesManager.getPropertiesManager();
-//        SokobanGameData gameInProgress = ui.getGSM().getGameInProgress();
-//
-//        try {
-//            // START BY LOADING THE LANGUAGE-DEPENDENT SUBHEADER
-//            String guessesSubheaderText = props
-//                    .getProperty(SokobanPropertyType.GAME_SUBHEADER_TEXT);
-//            Element h2 = gameDoc.getElement(GUESSES_SUBHEADER_ID);
-//            gameDoc.setInnerHTML(h2, guessesSubheaderText);
-//
-//			// AND NOW FILL IN THE LIST. WE'RE GOING TO ADD
-//            // LIST ITEMS TO THE ORDERED LIST
-//            Element ol = gameDoc.getElement(GUESSES_LIST_ID);
-//
-//            oldGuessMatch = newGuessMatch;
-//            String htmlText = buildGuessHTML(guess, newGuessMatch);
-//            gameDoc.insertBeforeEnd(ol, htmlText);
-//            // AND NOW ADD THE GAME OVER TEXT IF NEEDED
-//            Element winH2 = gameDoc.getElement(WIN_DISPLAY_ID);
-//            Element loseH2 = gameDoc.getElement(LOSE_DISPLAY_ID);
-//
-//            System.out.println(gameInProgress.getWrongTimes());
-//            if (gameInProgress.isWordFound()) {
-//                // PLAYER HAS WON
-//                String winText = props
-//                        .getProperty(SokobanPropertyType.WIN_DISPLAY_TEXT);
-//                gameDoc.setInnerHTML(winH2, winText);
-//            }
-//
-//            if (gameInProgress.getWrongTimes() >= 6) {
-//                // PLAYER HAS LOST
-//                System.out.println("GET LOST");
-//
-//                String lossText = props
-//                        .getProperty(SokobanPropertyType.LOSE_DISPLAY_TEXT);
-//                gameDoc.setInnerHTML(loseH2, lossText);
-//            } else {
-//                // GAME IS STILL IN PROGRESS
-//                gameDoc.setInnerHTML(winH2, EMPTY_TEXT);
-//            }
-//        } // THE ERROR HANDLER WILL DEAL WITH ERRORS ASSOCIATED WITH BUILDING
-//        // THE HTML FOR THE PAGE, WHICH WOULD LIKELY BE DUE TO BAD DATA FROM
-//        // AN XML SETUP FILE
-//        catch (BadLocationException | IOException e) {
-//            SokobanErrorHandler errorHandler = ui.getErrorHandler();
-//            errorHandler
-//                    .processError(SokobanPropertyType.INVALID_DOC_ERROR_TEXT);
-//        }
-//    }
-
+    
     /**
      * This private helper method builds the HTML associated with a guess as a
      * list item, adding the proper colors as currently set by the player.
@@ -229,7 +170,7 @@ public class SokobanDocumentManager {
         int gamesPlayed = gsm.getGamesPlayed();
         int wins = gsm.getWins();
         int losses = gsm.getLosses();
-        SokobanGameData fastestWin = gsm.getFastestWin();
+        long fastestWin = gsm.getFastestWin();
 
         try {
             // USE THE STATS TO UPDATE THE TABLE AT THE TOP OF THE PAGE
@@ -246,8 +187,8 @@ public class SokobanDocumentManager {
             statsDoc.setInnerHTML(lossesElement, EMPTY_TEXT + losses);
 
             Element fastestWinElement = statsDoc.getElement(FASTEST_WIN_ID);
-            if (fastestWin != null) {
-                statsDoc.setInnerHTML(fastestWinElement, fastestWin.toString());
+            if (fastestWin != 0) {
+                statsDoc.setInnerHTML(fastestWinElement, fastestWin+"");
             }
 
             // ADD THE SUBHEADER

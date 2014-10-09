@@ -18,6 +18,9 @@ import sokoban.game.SokobanGameStateManager;
 import application.Main.SokobanPropertyType;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import properties_manager.PropertiesManager;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
@@ -120,6 +123,7 @@ public class SokobanUI extends Pane {
     ArrayList<List<Integer>> redPointsInLevel = new ArrayList<>();
     
     ArrayList<List<Integer>> sokobanPosition = new ArrayList<>();
+    public Timer timer = new Timer();
 
 
     public SokobanUI() {
@@ -364,6 +368,8 @@ public class SokobanUI extends Pane {
                         }
                     }
                 }
+          
+                //CHECK IF WON
                 //now see if all boxes are on all red points
                 //make an arraylist of boxes moving as well? how to undo?
                 //loop, if all red points in array have boxes on top the win dialog should pop up
@@ -374,10 +380,65 @@ public class SokobanUI extends Pane {
                     }  
                 }
                 if(redPointsCounter == redPointsInLevel.size()){
+                    //POP BOX TO WIN MESSAGE
                     System.out.println("YOU WIN!");
+                    gsm.wins[gsm.getGameState()]++;
+                    // TODO : also check if the current time is faster than the fastest time and chenge it if it is
+                    //set game is over
+                    //TODO IS THIS CORRECT?
+                    //gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
                     respondToWin(primaryStage);
-                    
-                    //now make popup box!!!
+                }
+                
+                //CHECK IF LOST
+                //how to check if lost?
+                //if (!gsm.isGameOver()) {
+                    outerloop:
+                    for (int i = 0; i < gsm.getGridColumns(); i++) {
+                        for (int j = 0; j < gsm.getGridRows(); j++) {
+                            if (gsm.getGrid()[i][j] == 2) {
+                                System.out.println("box pos:" + gsm.getGrid()[i][j]);
+                                
+                                //boolean up = checkUp(gsm.getGrid(), i, j);
+                                boolean up = false, down = false, left = false, right = false;
+                                
+                                if(gsm.getGrid()[i][j - 1] == 0 || gsm.getGrid()[i][j - 1] == 3 
+                                        || gsm.getGrid()[i][j - 1] == 4){
+                                    up = true;
+                                }
+                                if(gsm.getGrid()[i][j + 1] == 0 || gsm.getGrid()[i][j + 1] == 3 
+                                        || gsm.getGrid()[i][j + 1] == 4){
+                                    down = true;
+                                }
+                                if(gsm.getGrid()[i - 1][j] == 0 || gsm.getGrid()[i - 1][j] == 3
+                                        || gsm.getGrid()[i - 1][j] == 4){
+                                    left = true;
+                                }
+                                if(gsm.getGrid()[i + 1][j] == 0 || gsm.getGrid()[i + 1][j] == 3 
+                                        || gsm.getGrid()[i + 1][j] == 4){
+                                    right = true;
+                                }
+                                //boolean down = checkDown(gsm.getGrid(), i, j);
+                                //boolean left = checkLeft(gsm.getGrid(), i, j);
+                                //boolean right = checkRight(gsm.getGrid(), i, j);
+                                boolean isRedPoint = false;
+                                for (int t = 0; t < redPointsInLevel.size(); t++) {
+                                    if (gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)] == 
+                                            gsm.getGrid()[i][j]) {
+                                        isRedPoint = true;
+                                    }
+                                }
+
+                                if (((up == false && left == false) || (down == false && right == false) || 
+                                        (up == false && right == false) || (down == false && left == false))
+                                        //and not red point
+                                        && isRedPoint == false) {
+                                    System.out.println("YOU LOSE!");
+                                    break outerloop;
+                                }
+                            }
+                        }
+                    //}
                 }
             }
             
@@ -387,7 +448,16 @@ public class SokobanUI extends Pane {
                 PropertiesManager props = PropertiesManager.getPropertiesManager();
                 options[0] = props.getProperty(SokobanPropertyType.DEFAULT_YES_TEXT);
                 options[1] = props.getProperty(SokobanPropertyType.DEFAULT_NO_TEXT);
-                String verifyExit = props.getProperty(SokobanPropertyType.WIN_DISPLAY_TEXT);
+                //String verifyExit = props.getProperty(SokobanPropertyType.WIN_DISPLAY_TEXT);
+                
+                String winImagePath = props
+                        .getProperty(SokobanPropertyType.WIN_IMAGE_NAME);
+                props.addProperty(SokobanPropertyType.INSETS, "5");
+                //String str = props.getProperty(SokobanPropertyType.INSETS);
+
+                Image winImage = loadImage(winImagePath);
+                Label winLabel = new Label("YOU WON! Go back to splash screen?");
+                winLabel.setGraphic(new ImageView(winImage));
 
                 // FIRST MAKE SURE THE USER REALLY WANTS TO EXIT
                 Stage dialogStage = new Stage();
@@ -400,11 +470,11 @@ public class SokobanUI extends Pane {
                 optionPane.setSpacing(25.0);
                 optionPane.setAlignment(Pos.CENTER);
                 optionPane.getChildren().addAll(yesButton, noButton);
-                Label exitLabel = new Label(verifyExit);
-                exitPane.setCenter(exitLabel);
+                //Label exitLabel = new Label(verifyExit);
+                exitPane.setCenter(winLabel);
 
                 exitPane.setBottom(optionPane);
-                Scene scene = new Scene(exitPane, 380, 200);
+                Scene scene = new Scene(exitPane, 420, 200);
                 dialogStage.setScene(scene);
                 dialogStage.show();
                 // WHAT'S THE USER'S DECISION?
@@ -686,6 +756,7 @@ public class SokobanUI extends Pane {
         northToolbar.setAlignment(Pos.CENTER);
         northToolbar.setPadding(marginlessInsets);
         northToolbar.setSpacing(10.0);
+        
 
         //BACK BUTTON
         gameButton = initToolbarButton(northToolbar,
@@ -728,23 +799,29 @@ public class SokobanUI extends Pane {
             public void handle(ActionEvent event) {
                 eventHandler
                         .respondToSwitchScreenRequest(SokobanUIState.VIEW_HELP_STATE);
+                
             }
 
         });
 
         // TIMER/ EXIT BUTTON
-        exitButton = initToolbarButton(northToolbar,
-                SokobanPropertyType.EXIT_IMG_NAME); //actually time button
+        Label timerLabel = new Label("Time: ");
+        northToolbar.getChildren().add(timerLabel);
+
+        
+        timer.schedule(new DisplayTime(timerLabel), 0, 1000);
+        //exitButton = initToolbarButton(northToolbar,
+              // SokobanPropertyType.EXIT_IMG_NAME); //actually time button
         //setTooltip(exitButton, SokobanPropertyType.EXIT_TOOLTIP);
-        exitButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                // TODO Auto-generated method stub
-                eventHandler.respondToExitRequest(primaryStage);
-            }
-
-        });
+//        exitButton.setOnAction(new EventHandler<ActionEvent>() {
+//
+//            @Override
+//            public void handle(ActionEvent event) {
+//                // TODO Auto-generated method stub
+//                eventHandler.respondToExitRequest(primaryStage);
+//            }
+//
+//        });
 
         // AND NOW PUT THE NORTH TOOLBAR IN THE FRAME
         mainPane.setTop(northToolbar);
@@ -811,6 +888,7 @@ public class SokobanUI extends Pane {
         switch (uiScreen) {
             //splash creen state, or play game state
             case SPLASH_SCREEN_STATE:
+                gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_NOT_STARTED);
                 System.out.println("in change workspace method");
                 mainPane.getChildren().clear();
                 //reput title cause in main method
@@ -827,7 +905,9 @@ public class SokobanUI extends Pane {
             case VIEW_HELP_STATE:
                 props = PropertiesManager.getPropertiesManager();
                 primaryStage.setTitle(props.getProperty(SokobanPropertyType.STATS_PANE_TEXT));
-                mainPane.setCenter(statsScrollPane);
+                mainPane.setCenter(statsScrollPane); 
+                //takes timer out of toolbar
+                northToolbar.getChildren().remove(3);
                 break;
                 
             case PLAY_GAME_STATE:
