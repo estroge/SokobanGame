@@ -16,6 +16,8 @@ import sokoban.file.SokobanFileLoader;
 import sokoban.game.SokobanGameData;
 import sokoban.game.SokobanGameStateManager;
 import application.Main.SokobanPropertyType;
+import java.util.Arrays;
+import java.util.List;
 import properties_manager.PropertiesManager;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
@@ -112,6 +114,10 @@ public class SokobanUI extends Pane {
     GridRenderer gridRenderer = new GridRenderer();
     SokobanGameStateManager gsm;
     private boolean canMove;
+    ArrayList<List<Integer>> redPointsInLevel = new ArrayList<>();
+    ArrayList<List<Integer>> sokobanPosition = new ArrayList<>();
+    //int iGuyPos = -1;
+    //int jGuyPos = -1;
 
     public SokobanUI() {
         gsm = new SokobanGameStateManager(this); //only can be made once.
@@ -158,35 +164,72 @@ public class SokobanUI extends Pane {
                 .getProperty(SokobanPropertyType.WINDOW_HEIGHT));
         mainPane.resize(paneWidth, paneHeigth);
         mainPane.setPadding(marginlessInsets);
-        
-        //put arrows here
+
+        //have keep track of red points right in the beginning of the game
+        //so win when all boxes are over red points
+        //method runs once to find all red points
+        //when guy moves off red point resets to red points
+        //box can overwrite red points to win all red points, must have boxes
+        //if box, have to check beyond box
         mainPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 //System.out.println("Key Pressed: " + ke.getCode());
+                
+                //if statement to repaint red point if guy went over it
+                boolean isOverRedPoint = false;
+                for(int k = 0; k < redPointsInLevel.size(); k++){
+                    if(sokobanPosition.get(0).equals(redPointsInLevel.get(k))){
+                        isOverRedPoint = true;
+                    }
+                }
+                //System.out.println("over red pt: " + isOverRedPoint);
+                System.out.println("sok loc:" + sokobanPosition);
+                System.out.println("red loc:" + redPointsInLevel);
+                
+                
                 boolean nextIsBox = false;
                 outerloop:
-                if(ke.getCode().equals(KeyCode.UP)){
+                if (ke.getCode().equals(KeyCode.UP)) {
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
-                            if(gsm.getGrid()[i][j] == 4){
+                            if (gsm.getGrid()[i][j] == 4) {
+                                
                                 //gsm.getGrid()[i][j] = 0;
                                 nextIsBox = checkUp(gsm.getGrid(), i, j);
                                 //check if can move, then check if next is box
-                                if(canMove == true && nextIsBox == false){
-                                    gsm.getGrid()[i][j] = 0;
-                                    gsm.getGrid()[i][j-1] = 4;
+                                if (canMove == true && nextIsBox == false) {
+                                    sokobanPosition.add(0, Arrays.asList(i,j - 1));
+                                    if(isOverRedPoint == true){
+                                       gsm.getGrid()[i][j] = 3;
+                                       gsm.getGrid()[i][j - 1] = 4; 
+                                    }
+                                    else{
+                                        gsm.getGrid()[i][j] = 0;
+                                        gsm.getGrid()[i][j - 1] = 4;
+                                    }
                                 }
-                                if(canMove == true && nextIsBox == true){
-                                    gsm.getGrid()[i][j] = 0;
-                                    gsm.getGrid()[i][j-2] = 2;
-                                    gsm.getGrid()[i][j-1] = 4;
-                                }                              
+                                if (canMove == true && nextIsBox == true) {
+                                    sokobanPosition.add(0, Arrays.asList(i,j - 1));
+                                    if(isOverRedPoint == true){
+                                       gsm.getGrid()[i][j] = 3;
+                                       gsm.getGrid()[i][j - 2] = 2;
+                                       gsm.getGrid()[i][j - 1] = 4; 
+                                    }
+                                    else{
+                                        gsm.getGrid()[i][j] = 0;
+                                        gsm.getGrid()[i][j - 2] = 2;
+                                        gsm.getGrid()[i][j - 1] = 4;
+                                    }
+                                }
+                                
                                 //make boolean class var, switch statement, if true, check case, 2 cases
                                 //make second copy of grid, everytime he moves compare with old grid, to repaint red dots
-                             
-                                gridRenderer.repaint(gsm.getGridColumns(),gsm.getGridRows(), gsm.getGrid());
+
+                                System.out.println("sok loc:" + sokobanPosition);
+                                System.out.println("red loc:" + redPointsInLevel);
+                                gridRenderer.repaint(gsm.getGridColumns(), gsm.getGridRows(), gsm.getGrid());
                                 break outerloop;
-                        }
+                            }
                         }
                     }
                     //go through grid find 4 the guy and then move him in the direction
@@ -196,77 +239,130 @@ public class SokobanUI extends Pane {
                     //change value in grid 
                     //then call grid rend to repaint
                 }
-                if(ke.getCode().equals(KeyCode.DOWN)){
+                if (ke.getCode().equals(KeyCode.DOWN)) {
                     outerloop:
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
-                            if(gsm.getGrid()[i][j] == 4){
+                            if (gsm.getGrid()[i][j] == 4) {
+                                
                                 nextIsBox = checkDown(gsm.getGrid(), i, j);
                                 //gsm.getGrid()[i][j] = 0;
                                 //check if can move, then check if next is box
-                                if(canMove == true && nextIsBox == false){
-                                    gsm.getGrid()[i][j] = 0;
-                                    gsm.getGrid()[i][j+1] = 4;
+                                if (canMove == true && nextIsBox == false) {
+                                    sokobanPosition.add(0, Arrays.asList(i,j + 1));
+                                    if(isOverRedPoint){
+                                       gsm.getGrid()[i][j] = 3;
+                                       gsm.getGrid()[i][j + 1] = 4; 
+                                    }
+                                    else{
+                                        gsm.getGrid()[i][j] = 0;
+                                        gsm.getGrid()[i][j + 1] = 4;
+                                    }
                                 }
-                                if(canMove == true && nextIsBox == true){
-                                    gsm.getGrid()[i][j] = 0;
-                                    gsm.getGrid()[i][j+2] = 2;
-                                    gsm.getGrid()[i][j+1] = 4;
-                                } 
+                                if (canMove == true && nextIsBox == true) {
+                                    sokobanPosition.add(0, Arrays.asList(i,j + 1));
+                                    if(isOverRedPoint){
+                                       gsm.getGrid()[i][j] = 3;
+                                       gsm.getGrid()[i][j + 2] = 2;
+                                       gsm.getGrid()[i][j + 1] = 4; 
+                                    }
+                                    else{
+                                        gsm.getGrid()[i][j] = 0;
+                                        gsm.getGrid()[i][j + 2] = 2;
+                                        gsm.getGrid()[i][j + 1] = 4;
+                                    }
+                                }
                                 //System.out.println(i + " " + j);
-                                gridRenderer.repaint(gsm.getGridColumns(),gsm.getGridRows(), gsm.getGrid());
+                                System.out.println("sok loc:" + sokobanPosition);
+                                System.out.println("red loc:" + redPointsInLevel);
+                                gridRenderer.repaint(gsm.getGridColumns(), gsm.getGridRows(), gsm.getGrid());
                                 break outerloop;
-                        }
+                            }
                         }
                     }
                 }
-                if(ke.getCode().equals(KeyCode.LEFT)){
+                if (ke.getCode().equals(KeyCode.LEFT)) {
                     outerloop:
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
-                            if(gsm.getGrid()[i][j] == 4){
+                            if (gsm.getGrid()[i][j] == 4) {
+                                
                                 nextIsBox = checkLeft(gsm.getGrid(), i, j);
                                 //gsm.getGrid()[i][j] = 0;
                                 //check if can move, then check if next is box
-                                if(canMove == true && nextIsBox == false){
-                                    gsm.getGrid()[i][j] = 0;
-                                    gsm.getGrid()[i-1][j] = 4;
+                                if (canMove == true && nextIsBox == false) {
+                                    sokobanPosition.add(0, Arrays.asList(i - 1,j));
+                                    if(isOverRedPoint){
+                                       gsm.getGrid()[i][j] = 3;
+                                       gsm.getGrid()[i - 1][j] = 4; 
+                                    }
+                                    else{
+                                        gsm.getGrid()[i][j] = 0;
+                                        gsm.getGrid()[i - 1][j] = 4;
+                                    }
                                 }
-                                if(canMove == true && nextIsBox == true){
-                                    gsm.getGrid()[i][j] = 0;
-                                    gsm.getGrid()[i-2][j] = 2;
-                                    gsm.getGrid()[i-1][j] = 4;
+                                if (canMove == true && nextIsBox == true) {
+                                    sokobanPosition.add(0, Arrays.asList(i - 1,j));
+                                    if(isOverRedPoint){
+                                       gsm.getGrid()[i][j] = 3;
+                                       gsm.getGrid()[i - 2][j] = 2;
+                                       gsm.getGrid()[i - 1][j] = 4; 
+                                    }
+                                    else{
+                                        gsm.getGrid()[i][j] = 0;
+                                        gsm.getGrid()[i - 2][j] = 2;
+                                        gsm.getGrid()[i - 1][j] = 4;
+                                    }
                                 }
                                 //System.out.println(i + " " + j);
-                                gridRenderer.repaint(gsm.getGridColumns(),gsm.getGridRows(), gsm.getGrid());
+                                System.out.println("sok loc:" + sokobanPosition);
+                                System.out.println("red loc:" + redPointsInLevel);
+                                gridRenderer.repaint(gsm.getGridColumns(), gsm.getGridRows(), gsm.getGrid());
                                 break outerloop;
-                        }
+                            }
                         }
                     }
                 }
-                if(ke.getCode().equals(KeyCode.RIGHT)){
+                if (ke.getCode().equals(KeyCode.RIGHT)) {
                     outerloop:
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
-                            if(gsm.getGrid()[i][j] == 4){
-                                gsm.getGrid()[i][j] = 0; //have to change this
-                                //have keep track of red points right in the beginning of the game
-                                //so win when all boxes are over red points
-                                //method runs once to find all red points
-                                //when guy moves off red point resets to red points
-                                //box can overwrite red points to win all red points, must have boxes
-                                //if box, have to check beyond box
-                                System.out.println(i + " " + j);
-                                gsm.getGrid()[i+1][j] = 4;
-                                System.out.println(i + " " + j);
-                                gridRenderer.repaint(gsm.getGridColumns(),gsm.getGridRows(), gsm.getGrid());
+                            if (gsm.getGrid()[i][j] == 4) {
+                                nextIsBox = checkRight(gsm.getGrid(), i, j);
+                                //check if can move, then check if next is box
+                                if (canMove == true && nextIsBox == false) {
+                                    sokobanPosition.add(0, Arrays.asList(i + 1,j));
+                                    if(isOverRedPoint){
+                                       gsm.getGrid()[i][j] = 3;
+                                       gsm.getGrid()[i + 1][j] = 4; 
+                                    }
+                                    else{
+                                        gsm.getGrid()[i][j] = 0;
+                                        gsm.getGrid()[i + 1][j] = 4;
+                                    }
+                                }
+                                if (canMove == true && nextIsBox == true) {
+                                    sokobanPosition.add(0, Arrays.asList(i + 1,j));
+                                    if(isOverRedPoint){
+                                        gsm.getGrid()[i][j] = 3;
+                                        gsm.getGrid()[i + 2][j] = 2;
+                                        gsm.getGrid()[i + 1][j] = 4;
+                                    }
+                                    else{
+                                        gsm.getGrid()[i][j] = 0;
+                                        gsm.getGrid()[i + 2][j] = 2;
+                                        gsm.getGrid()[i + 1][j] = 4;
+                                    }
+                                }
+                                //System.out.println(i + " " + j);
+                                gridRenderer.repaint(gsm.getGridColumns(), gsm.getGridRows(), gsm.getGrid());
                                 break outerloop;
-                        }
+                            }
                         }
                     }
                 }
-               }
-            
+            }
+
             //make flag
             //wall first, then check box (j-2), if 0 can move, if 1 cannot
             //else move 
@@ -274,96 +370,112 @@ public class SokobanUI extends Pane {
             //canMove says if player can move to next position
             private boolean checkUp(int grid[][], int i, int j) {
                 //if theres a wall
-                if(grid[i][j-1] == 1){
+                if (grid[i][j - 1] == 1) {
                     canMove = false;
                     return false;
-                }
-                //if box behind box
-                else if(grid[i][j-1] == 2 && grid[i][j-2] == 2){
+                } //if box behind box
+                else if (grid[i][j - 1] == 2 && grid[i][j - 2] == 2) {
                     canMove = false;
                     return false;
-                }
-                //if wall behind box
-                else if(grid[i][j-1] == 2 && grid[i][j-2] == 1){
+                } //if wall behind box
+                else if (grid[i][j - 1] == 2 && grid[i][j - 2] == 1) {
                     canMove = false;
                     return false;
-                }
-                //if next square is empty and not a box
-                else if(grid[i][j-1] == 0){
+                } //if next square is empty and not a box
+                else if (grid[i][j - 1] == 0) {
                     canMove = true;
                     return false;
-                }
-                //if just box
-                else if(grid[i][j-1] == 2){
+                } //if just box
+                else if (grid[i][j - 1] == 2) {
                     canMove = true;
                     return true;
+                } //any other condition
+                else {
+                    return false;
                 }
-                //any other condition
-                else return false;
             }
 
             private boolean checkDown(int[][] grid, int i, int j) {
                 //if theres a wall
-                if(grid[i][j+1] == 1){
+                if (grid[i][j + 1] == 1) {
                     canMove = false;
                     return false;
-                }
-                //if box behind box
-                else if(grid[i][j+1] == 2 && grid[i][j+2] == 2){
+                } //if box behind box
+                else if (grid[i][j + 1] == 2 && grid[i][j + 2] == 2) {
                     canMove = false;
                     return false;
-                }
-                //if wall behind box
-                else if(grid[i][j+1] == 2 && grid[i][j+2] == 1){
+                } //if wall behind box
+                else if (grid[i][j + 1] == 2 && grid[i][j + 2] == 1) {
                     canMove = false;
                     return false;
-                }
-                //if next square is empty and not a box
-                else if(grid[i][j+1] == 0){
+                } //if next square is empty and not a box
+                else if (grid[i][j + 1] == 0) {
                     canMove = true;
                     return false;
-                }
-                //if just box
-                else if(grid[i][j+1] == 2){
+                } //if just box
+                else if (grid[i][j + 1] == 2) {
                     canMove = true;
                     return true;
+                } //any other condition
+                else {
+                    return false;
                 }
-                //any other condition
-                else return false;
             }
 
             private boolean checkLeft(int[][] grid, int i, int j) {
                 //if theres a wall
-                if(grid[i-1][j] == 1){
+                if (grid[i - 1][j] == 1) {
                     canMove = false;
                     return false;
-                }
-                //if box behind box
-                else if(grid[i-1][j] == 2 && grid[i-2][j] == 2){
+                } //if box behind box
+                else if (grid[i - 1][j] == 2 && grid[i - 2][j] == 2) {
                     canMove = false;
                     return false;
-                }
-                //if wall behind box
-                else if(grid[i-1][j] == 2 && grid[i-2][j] == 1){
+                } //if wall behind box
+                else if (grid[i - 1][j] == 2 && grid[i - 2][j] == 1) {
                     canMove = false;
                     return false;
-                }
-                //if next square is empty and not a box
-                else if(grid[i-1][j] == 0){
+                } //if next square is empty and not a box
+                else if (grid[i - 1][j] == 0) {
                     canMove = true;
                     return false;
-                }
-                //if just box
-                else if(grid[i-1][j] == 2){
+                } //if just box
+                else if (grid[i - 1][j] == 2) {
                     canMove = true;
                     return true;
+                } //any other condition
+                else {
+                    return false;
                 }
-                //any other condition
-                else return false;
             }
-            });
-    
-        
+
+            private boolean checkRight(int[][] grid, int i, int j) {
+                //if theres a wall
+                if (grid[i + 1][j] == 1) {
+                    canMove = false;
+                    return false;
+                } //if box behind box
+                else if (grid[i + 1][j] == 2 && grid[i + 2][j] == 2) {
+                    canMove = false;
+                    return false;
+                } //if wall behind box
+                else if (grid[i + 1][j] == 2 && grid[i + 2][j] == 1) {
+                    canMove = false;
+                    return false;
+                } //if next square is empty and not a box
+                else if (grid[i + 1][j] == 0) {
+                    canMove = true;
+                    return false;
+                } //if just box
+                else if (grid[i + 1][j] == 2) {
+                    canMove = true;
+                    return true;
+                } //any other condition
+                else {
+                    return false;
+                }
+            }
+        });
     }
 
     public void initSplashScreen() {
@@ -419,15 +531,13 @@ public class SokobanUI extends Pane {
 
                 @Override
                 public void handle(ActionEvent event) {
-                    // TODO!
                     eventHandler.respondToSelectLevelRequest(level);
-                    // mainPane.setCenter(gamePanel);
                     initSokobanUI(); //wrong place?
 
-                    changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
+                    //didn't want this since in initSokobanUI it changes the workspace
+                    //changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
                 }
             });
-            // TODO
             levelSelectionPane.getChildren().add(levelButton);
             // TODO: enable only the first level
             //levelButton.setDisable(true);
@@ -435,7 +545,7 @@ public class SokobanUI extends Pane {
 
         mainPane.setBottom(levelSelectionPane);
         mainPane.setCenter(splashScreenPane);
-       // mainPane.setCenter(levelSelectionPane);
+        // mainPane.setCenter(levelSelectionPane);
 
     }
 
@@ -470,8 +580,6 @@ public class SokobanUI extends Pane {
     }
 
     private void initGameScreen() {
-        //GridRenderer gridRenderer = new GridRenderer();
-
         gridRenderer.repaint(getGSM().getGridColumns(), getGSM().getGridRows(), getGSM().getGrid());
         gamePanel.setCenter(gridRenderer);
 
@@ -615,12 +723,11 @@ public class SokobanUI extends Pane {
                 System.out.println("in change workspace method");
                 mainPane.getChildren().clear();
                 //reput title cause in main method
-                
+
                 PropertiesManager props = PropertiesManager.getPropertiesManager();
                 String title = props.getProperty(SokobanPropertyType.SPLASH_SCREEN_TITLE_TEXT);
                 primaryStage.setTitle(title);
-           
-                
+
                 //initSplashScreen();
                 mainPane.setBottom(levelSelectionPane);
                 mainPane.setCenter(splashScreenPane);
@@ -629,15 +736,43 @@ public class SokobanUI extends Pane {
             case VIEW_HELP_STATE:
                 mainPane.setCenter(helpPanel);
                 break;
+                
             case PLAY_GAME_STATE:
+                redPointsInLevel.clear();
                 mainPane.setCenter(gamePanel);
+                findAllRedPoints();
+                findSokobanPosition();
                 break;
+
             case VIEW_STATS_STATE:
                 mainPane.setCenter(statsScrollPane);
                 break;
             default:
         }
 
+    }
+    //what if different level? how to clear array and reset?
+
+    private void findAllRedPoints() {
+        for (int i = 0; i < gsm.getGridColumns(); i++) {
+            for (int j = 0; j < gsm.getGridRows(); j++) {
+                if (gsm.getGrid()[i][j] == 3) {
+                    redPointsInLevel.add(Arrays.asList(i, j));
+                }
+            }
+        }
+        System.out.println(redPointsInLevel);
+    }
+    
+    private void findSokobanPosition(){
+        for (int i = 0; i < gsm.getGridColumns(); i++) {
+            for (int j = 0; j < gsm.getGridRows(); j++) {
+                if (gsm.getGrid()[i][j] == 4) {
+                    sokobanPosition.add(Arrays.asList(i, j));
+                }
+            }
+        }
+        System.out.println(sokobanPosition);
     }
 
 }
