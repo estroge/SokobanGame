@@ -387,6 +387,7 @@ public class SokobanUI extends Pane {
                     //set game is over
                     //TODO IS THIS CORRECT?
                     //gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
+                    docManager.addGameResultToStatsPage(gsm.getGameInProgress());
                     respondToWin(primaryStage);
                 }
                 
@@ -434,12 +435,60 @@ public class SokobanUI extends Pane {
                                         //and not red point
                                         && isRedPoint == false) {
                                     System.out.println("YOU LOSE!");
+                                    respondToLoss(primaryStage);
                                     break outerloop;
                                 }
                             }
                         }
                     //}
                 }
+            }
+            
+                public void respondToLoss(Stage primaryStage) {
+                // ENGLIS IS THE DEFAULT
+                String options[] = new String[]{"Yes", "No"};
+                PropertiesManager props = PropertiesManager.getPropertiesManager();
+                options[0] = props.getProperty(SokobanPropertyType.DEFAULT_YES_TEXT);
+                options[1] = props.getProperty(SokobanPropertyType.DEFAULT_NO_TEXT);
+                //String verifyExit = props.getProperty(SokobanPropertyType.WIN_DISPLAY_TEXT);
+                
+                String winImagePath = props
+                        .getProperty(SokobanPropertyType.LOST_IMAGE_NAME);
+                props.addProperty(SokobanPropertyType.INSETS, "5");
+                //String str = props.getProperty(SokobanPropertyType.INSETS);
+
+                Image winImage = loadImage(winImagePath);
+                Label winLabel = new Label("YOU LOST! Go back to splash screen?");
+                winLabel.setGraphic(new ImageView(winImage));
+
+                // FIRST MAKE SURE THE USER REALLY WANTS TO EXIT
+                Stage dialogStage = new Stage();
+                dialogStage.initModality(Modality.WINDOW_MODAL);
+                dialogStage.initOwner(primaryStage);
+                BorderPane exitPane = new BorderPane();
+                HBox optionPane = new HBox();
+                Button yesButton = new Button(options[0]);
+                Button noButton = new Button(options[1]);
+                optionPane.setSpacing(25.0);
+                optionPane.setAlignment(Pos.CENTER);
+                optionPane.getChildren().addAll(yesButton, noButton);
+                //Label exitLabel = new Label(verifyExit);
+                exitPane.setCenter(winLabel);
+
+                exitPane.setBottom(optionPane);
+                Scene scene = new Scene(exitPane, 420, 200);
+                dialogStage.setScene(scene);
+                dialogStage.show();
+                // WHAT'S THE USER'S DECISION?
+                yesButton.setOnAction(e -> {
+                    //CHANGE TO GO BACK TO SPLASH SCRREN
+                    changeWorkspace(SokobanUIState.SPLASH_SCREEN_STATE);
+                    dialogStage.close();
+                });
+                noButton.setOnAction(e -> {
+                    dialogStage.close();
+                });
+
             }
             
             public void respondToWin(Stage primaryStage) {
@@ -908,6 +957,7 @@ public class SokobanUI extends Pane {
                 mainPane.setCenter(statsScrollPane); 
                 //takes timer out of toolbar
                 northToolbar.getChildren().remove(3);
+                docManager.addGameResultToStatsPage(gsm.getGameInProgress());
                 break;
                 
             case PLAY_GAME_STATE:

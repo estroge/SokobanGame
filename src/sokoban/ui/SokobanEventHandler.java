@@ -66,6 +66,8 @@ public class SokobanEventHandler {
             case "Level 7": fileLoader.FileLoader("./data/level7.sok", ui.getGSM());
                 break;
         }
+        respondToNewGameRequest();
+        
     }
 
     /**

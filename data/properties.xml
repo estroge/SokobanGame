@@ -10,6 +10,7 @@
         <property name="WINDOW_HEIGHT"              value="820"></property>
         <property name="SPLASH_SCREEN_IMAGE_NAME"   value="SokobanSplashScreen.png"></property>
         <property name="WIN_IMAGE_NAME"             value="trophy.png"></property>
+        <property name="LOST_IMAGE_NAME"            value="youlose.PNG"></property>
         <property name="DATA_PATH"                  value="./data/"></property>
         <property name="IMG_PATH"                   value="./images/"></property>
         <property name="LETTERS_FONT_FAMILY"        value="monospaced"></property>
