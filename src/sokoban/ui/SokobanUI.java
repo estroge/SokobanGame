@@ -135,6 +135,7 @@ public class SokobanUI extends Pane {
     AudioClip winClip = new AudioClip("file:data/win.wav");
     AudioClip loseClip = new AudioClip("file:data/lose.wav");
     AudioClip mainClip = new AudioClip("file:data/themeSong.mp3");
+    AudioClip moveClip = new AudioClip("file:data/step.wav");
 
     public SokobanUI() {
         gsm = new SokobanGameStateManager(this); //only can be made once.
@@ -226,7 +227,8 @@ public class SokobanUI extends Pane {
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
                             if (gsm.getGrid()[i][j] == 4) {
-
+                                moveClip.play();
+                                moveClip.setCycleCount(2);
                                 //gsm.getGrid()[i][j] = 0;
                                 nextIsBox = checkUp(gsm.getGrid(), i, j);
                                 //check if can move, then check if next is box
@@ -284,7 +286,8 @@ public class SokobanUI extends Pane {
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
                             if (gsm.getGrid()[i][j] == 4) {
-
+                                moveClip.play();
+                                moveClip.setCycleCount(2);
                                 nextIsBox = checkDown(gsm.getGrid(), i, j);
                                 //gsm.getGrid()[i][j] = 0;
                                 //check if can move, then check if next is box
@@ -335,6 +338,8 @@ public class SokobanUI extends Pane {
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
                             if (gsm.getGrid()[i][j] == 4) {
+                                moveClip.play();
+                                moveClip.setCycleCount(2);
 
                                 nextIsBox = checkLeft(gsm.getGrid(), i, j);
                                 //gsm.getGrid()[i][j] = 0;
@@ -385,6 +390,8 @@ public class SokobanUI extends Pane {
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
                             if (gsm.getGrid()[i][j] == 4) {
+                                moveClip.play();
+                                moveClip.setCycleCount(2);
                                 nextIsBox = checkRight(gsm.getGrid(), i, j);
                                 //check if can move, then check if next is box
                                 if (canMove == true && nextIsBox == false) {
