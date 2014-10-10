@@ -58,6 +58,7 @@ public class SokobanDocumentManager {
     private final String GAMES_PLAYED_ID = "games_played";
     private final String WINS_ID = "wins";
     private final String LOSSES_ID = "losses";
+    private final String PERCENT_WON_ID = "percent_won";
     private final String FEWEST_GUESSES_ID = "fewest_guesses";
     private final String FASTEST_WIN_ID = "fastest_win";
     private final String GAME_RESULTS_HEADER_ID = "game_results_header";
@@ -166,11 +167,11 @@ public class SokobanDocumentManager {
     public void addGameResultToStatsPage(SokobanGameData completedGame) {
         // GET THE GAME STATS
         SokobanGameStateManager gsm = ui.getGSM();
-        int level = gsm.getGameState();
+        int level = gsm.getLevelState();
         int gamesPlayed = gsm.getGamesPlayed();
         int wins = gsm.getWins();
         int losses = gsm.getLosses();
-        long fastestWin = gsm.getFastestWin();
+        String fastestWin = gsm.getFastestWin();
 
         try {
             // USE THE STATS TO UPDATE THE TABLE AT THE TOP OF THE PAGE
@@ -185,9 +186,16 @@ public class SokobanDocumentManager {
 
             Element lossesElement = statsDoc.getElement(LOSSES_ID);
             statsDoc.setInnerHTML(lossesElement, EMPTY_TEXT + losses);
-
+            
+            Element percentElement = statsDoc.getElement(PERCENT_WON_ID);
+            
+            if((wins + losses) == 0){
+                statsDoc.setInnerHTML(percentElement, EMPTY_TEXT + "%0.00");
+            }else{
+            statsDoc.setInnerHTML(percentElement, EMPTY_TEXT + "%" +(((double)wins/(wins+losses))*100));
+            }
             Element fastestWinElement = statsDoc.getElement(FASTEST_WIN_ID);
-            if (fastestWin != 0) {
+            if ( ! ("" +fastestWin).equals("null")) {
                 statsDoc.setInnerHTML(fastestWinElement, fastestWin+"");
             }
 

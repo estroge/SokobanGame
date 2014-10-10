@@ -140,6 +140,7 @@ public class SokobanUI extends Pane {
     AudioClip wallClip = new AudioClip("file:data/wall.wav");
     
     TimerTask timertask;
+    private String endOfGameTime;
 
     public SokobanUI() {
         gsm = new SokobanGameStateManager(this); //only can be made once.
@@ -197,6 +198,8 @@ public class SokobanUI extends Pane {
             public void handle(KeyEvent ke) {
                 //System.out.println("Key Pressed: " + ke.getCode());
 
+                if(!gsm.isGameInProgress())
+                    return;
                 //if statement to repaint red point if guy went over it
                 boolean isOverRedPoint = false;
                 for (int k = 0; k < redPointsInLevel.size(); k++) {
@@ -453,23 +456,37 @@ public class SokobanUI extends Pane {
                 if (redPointsCounter == redPointsInLevel.size()) {
                     //POP BOX TO WIN MESSAGE
                     System.out.println("YOU WIN!");
-                    gsm.wins[gsm.getGameState()]++;
+                    gsm.wins[gsm.getLevelState()]++;
                     // TODO : also check if the current time is faster than the fastest time and chenge it if it is
                     //set game is over
 
-                    docManager.addGameResultToStatsPage(gsm.getGameInProgress());
                     
                     //MAKE WINNING SOUND!
                     winClip.play();
                     historyOfGrids.clear();
                     //initaudio load all audio files, instance vars up top
                     //call stop, has to be an instance var 
-                    String timeRef = timer.toString();
-                    System.out.println("timer: " + timeRef);
+
+                    endOfGameTime = timertask.toString();
+                    System.out.println("timer: " + endOfGameTime);
                     timer.cancel();
                     timer.purge();
 
-                    //gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
+                    //check if fastest
+                    
+                    //check if fastest
+                    for(int i = 1; i < gsm.fastest_win.length; i++){
+                        if(gsm.fastest_win[i] == null){
+                            gsm.fastest_win[i] = endOfGameTime;
+                        }
+                        if(endOfGameTime.compareTo(gsm.fastest_win[i]) == 1){
+                            gsm.fastest_win[i] = endOfGameTime;
+                        }
+                    }
+                    
+                    docManager.addGameResultToStatsPage(gsm.getGameInProgress());
+
+                    gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
                     respondToWin(primaryStage);
                     
 

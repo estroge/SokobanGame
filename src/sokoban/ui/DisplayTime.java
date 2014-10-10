@@ -40,10 +40,11 @@ public class DisplayTime extends TimerTask{
             lvlButton.setText(String.format("Time: %02d : %02d : %02d", ((seconds/60)/60)%60, (seconds/60)%60, seconds%60));
         });
     }
-   
-       
-        //then sleep later 
+    
+        @Override
+    public String toString() {
+        return "Time : " + String.format("%02d", hours) + ":" + String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
     }
-    
-    
+
+}
 

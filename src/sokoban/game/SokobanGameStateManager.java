@@ -41,7 +41,11 @@ public class SokobanGameStateManager {
 
     public enum SokobanGameState {
 
-        GAME_NOT_STARTED, GAME_IN_PROGRESS, GAME_OVER,
+        GAME_NOT_STARTED, GAME_IN_PROGRESS, GAME_OVER
+        
+
+    }
+    public enum SokobanLevelState{
         LEVEL1,
         LEVEL2,
         LEVEL3,
@@ -49,14 +53,26 @@ public class SokobanGameStateManager {
         LEVEL5,
         LEVEL6,
         LEVEL7
-
     }
 
     // STORES THE CURRENT STATE OF THIS GAME
     private SokobanGameState currentGameState;
+    private SokobanLevelState currentLevelState;
     
-    public int getGameState(){
-        switch(currentGameState){
+    public SokobanGameState getGameState(){
+//        switch(currentGameState){
+//            case GAME_NOT_STARTED:
+//                break;
+//            case GAME_IN_PROGRESS:
+//                break;
+//            case GAME_OVER:
+//                break;
+//        }
+        return currentGameState;
+    }
+    public int getLevelState(){
+    
+        switch(currentLevelState){
             case LEVEL1:
                 return 1;
             case LEVEL2:
@@ -78,6 +94,10 @@ public class SokobanGameStateManager {
     public void setGameState(SokobanGameState currentGameState){
         this.currentGameState = currentGameState;
     }
+    
+    public void setLevelState(SokobanLevelState currentLevelState){
+        this.currentLevelState = currentLevelState;
+    }
 
     // WHEN THE STATE OF THE GAME CHANGES IT WILL NEED TO BE
     // REFLECTED IN THE USER INTERFACE, SO THIS CLASS NEEDS
@@ -90,7 +110,7 @@ public class SokobanGameStateManager {
     // statistics
     public int[] played = new int[8]; // one element per level
     public int[] wins = new int[8];
-    public long[] fastest_win = new long[8];
+    public String[] fastest_win = new String[8];
 
     private final String NEWLINE_DELIMITER = "\n";
 
@@ -122,7 +142,7 @@ public class SokobanGameStateManager {
      * session.
      */
     public int getGamesPlayed() {
-        return played[getGameState()];
+        return played[getLevelState()];
     }
 
     /**
@@ -160,7 +180,7 @@ public class SokobanGameStateManager {
      * won.
      */
     public int getWins() {
-        return wins[getGameState()];
+        return wins[getLevelState()];
     }
 
     /**
@@ -170,7 +190,7 @@ public class SokobanGameStateManager {
      * lost.
      */
     public int getLosses() {
-        return played[getGameState()] - wins[getGameState()];
+        return played[getLevelState()] - wins[getLevelState()];
     }
 
     /**
@@ -180,13 +200,13 @@ public class SokobanGameStateManager {
      * @return The completed game that the player won requiring the least amount
      * of time.
      */
-    public long getFastestWin() {
-        if (played[getGameState()] == 0) {
-            return 0;
+    public String getFastestWin() {
+        if (played[getLevelState()] == 0) {
+            return 0+"";
         }
 
         // RETURN THE FASTEST GAME
-        return fastest_win[getGameState()];
+        return fastest_win[getLevelState()];
     }
 
     /**
@@ -196,7 +216,7 @@ public class SokobanGameStateManager {
      * this change of state such that it may reflect this change.
      */
     public void startNewGame() {
-        played[getGameState()]++;
+        played[getLevelState()]++;
 
         // TODO: call the FileLoader to load all the level histories from a file: statistics.data
         

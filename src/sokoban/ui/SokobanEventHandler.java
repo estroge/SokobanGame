@@ -15,6 +15,7 @@ import properties_manager.PropertiesManager;
 import xml_utilities.InvalidXMLFileFormatException;
 import sokoban.file.SokobanFileLoader;
 import sokoban.game.SokobanGameStateManager;
+import sokoban.game.SokobanGameStateManager.*;
 
 public class SokobanEventHandler {
 
@@ -52,18 +53,26 @@ public class SokobanEventHandler {
         switch(level){
             case "Level 1": System.out.println("Level 1 selected");
                 fileLoader.FileLoader("./data/level1.sok", ui.getGSM());
+                ui.getGSM().setLevelState(SokobanGameStateManager.SokobanLevelState.LEVEL1);
                 break;
             case "Level 2": fileLoader.FileLoader("./data/level2.sok", ui.getGSM());
+            
+                ui.getGSM().setLevelState(SokobanGameStateManager.SokobanLevelState.LEVEL2);
                 break;
             case "Level 3": fileLoader.FileLoader("./data/level3.sok", ui.getGSM());
+                ui.getGSM().setLevelState(SokobanGameStateManager.SokobanLevelState.LEVEL3);
                 break;
             case "Level 4": fileLoader.FileLoader("./data/level4.sok", ui.getGSM());
+                ui.getGSM().setLevelState(SokobanGameStateManager.SokobanLevelState.LEVEL4);
                 break;
             case "Level 5": fileLoader.FileLoader("./data/level5.sok", ui.getGSM());
+                ui.getGSM().setLevelState(SokobanGameStateManager.SokobanLevelState.LEVEL5);
                 break;
             case "Level 6": fileLoader.FileLoader("./data/level6.sok", ui.getGSM());
+                ui.getGSM().setLevelState(SokobanGameStateManager.SokobanLevelState.LEVEL6);
                 break;
             case "Level 7": fileLoader.FileLoader("./data/level7.sok", ui.getGSM());
+                ui.getGSM().setLevelState(SokobanGameStateManager.SokobanLevelState.LEVEL7);
                 break;
         }
         respondToNewGameRequest();
