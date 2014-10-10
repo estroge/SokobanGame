@@ -21,6 +21,7 @@ import javafx.scene.media.AudioClip;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import properties_manager.PropertiesManager;
@@ -128,7 +129,7 @@ public class SokobanUI extends Pane {
     ArrayList<List<Integer>> redPointsInLevel = new ArrayList<>();
     ArrayList<List<Integer>> sokobanPosition = new ArrayList<>();
     ArrayList<List<Integer>> boxesInLevel = new ArrayList<>();
-    public Timer timer = new Timer();
+    public Timer timer;
     ArrayList<int[][]> historyOfGrids = new ArrayList<>();
     
     //audio files
@@ -136,6 +137,9 @@ public class SokobanUI extends Pane {
     AudioClip loseClip = new AudioClip("file:data/lose.wav");
     AudioClip mainClip = new AudioClip("file:data/themeSong.mp3");
     AudioClip moveClip = new AudioClip("file:data/step.wav");
+    AudioClip wallClip = new AudioClip("file:data/wall.wav");
+    
+    TimerTask timertask;
 
     public SokobanUI() {
         gsm = new SokobanGameStateManager(this); //only can be made once.
@@ -254,6 +258,9 @@ public class SokobanUI extends Pane {
                                         gsm.getGrid()[i][j - 1] = 4;
                                     }
                                 }
+                                if(canMove == false){
+                                    wallClip.play();
+                                }
 
                                 //make boolean class var, switch statement, if true, check case, 2 cases
                                 //make second copy of grid, everytime he moves compare with old grid, to repaint red dots
@@ -313,6 +320,9 @@ public class SokobanUI extends Pane {
                                         gsm.getGrid()[i][j + 1] = 4;
                                     }
                                 }
+                                if(canMove == false){
+                                    wallClip.play();
+                                }
                                 //System.out.println(i + " " + j);
                                 System.out.println("sok loc:" + sokobanPosition);
                                 System.out.println("red loc:" + redPointsInLevel);
@@ -366,6 +376,9 @@ public class SokobanUI extends Pane {
                                         gsm.getGrid()[i - 1][j] = 4;
                                     }
                                 }
+                                if(canMove == false){
+                                    wallClip.play();
+                                }
                                 //System.out.println(i + " " + j);
                                 System.out.println("sok loc:" + sokobanPosition);
                                 System.out.println("red loc:" + redPointsInLevel);
@@ -416,6 +429,9 @@ public class SokobanUI extends Pane {
                                         gsm.getGrid()[i + 1][j] = 4;
                                     }
                                 }
+                                if(canMove == false){
+                                    wallClip.play();
+                                }
                                 //System.out.println(i + " " + j);
                                 gridRenderer.repaint(gsm.getGridColumns(), gsm.getGridRows(), gsm.getGrid());
                                 break outerloop;
@@ -440,26 +456,22 @@ public class SokobanUI extends Pane {
                     gsm.wins[gsm.getGameState()]++;
                     // TODO : also check if the current time is faster than the fastest time and chenge it if it is
                     //set game is over
-                    //TODO IS THIS CORRECT?
 
                     docManager.addGameResultToStatsPage(gsm.getGameInProgress());
                     
                     //MAKE WINNING SOUND!
-
-                    //AudioClip clip = new AudioClip("file:data/win.wav");
-                    //clip.setCycleCount(5);
-                    
                     winClip.play();
                     historyOfGrids.clear();
                     //initaudio load all audio files, instance vars up top
                     //call stop, has to be an instance var 
+                    String timeRef = timer.toString();
+                    System.out.println("timer: " + timeRef);
+                    timer.cancel();
+                    timer.purge();
 
-//                    Media medMsg = new Media(ImgPath);
-//                    MediaPlayer medplMsg = new MediaPlayer(medMsg);
-//                    medplMsg.play();
-                    
                     //gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
                     respondToWin(primaryStage);
+                    
 
                 }
 
@@ -970,10 +982,12 @@ public class SokobanUI extends Pane {
         });
 
         // TIMER/ EXIT BUTTON
+        timer = new Timer();
         Label timerLabel = new Label("Time: ");
         northToolbar.getChildren().add(timerLabel);
-
-        timer.schedule(new DisplayTime(timerLabel), 0, 1000);
+        timertask = new DisplayTime(timerLabel);
+        timer.schedule(timertask, 0, 1000);
+        
         //exitButton = initToolbarButton(northToolbar,
         // SokobanPropertyType.EXIT_IMG_NAME); //actually time button
         //setTooltip(exitButton, SokobanPropertyType.EXIT_TOOLTIP);
@@ -1080,6 +1094,7 @@ public class SokobanUI extends Pane {
                 mainClip.stop();
                 redPointsInLevel.clear();
                 mainPane.setCenter(gamePanel);
+                
                 findAllRedPoints();
                 findSokobanPosition();
                 

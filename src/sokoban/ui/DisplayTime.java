@@ -24,6 +24,8 @@ public class DisplayTime extends TimerTask{
     public int seconds = 0;
     public int minutes = seconds/60;
     public int hours = minutes/60;
+    //String time = String.format("%2d", seconds);
+    //String s = String.format("Duke's Birthday: %1$tm %1$te,%1$tY", c);
 
     
     
@@ -34,7 +36,8 @@ public class DisplayTime extends TimerTask{
     public void run(){
         Platform.runLater(()->{
             seconds++;
-            lvlButton.setText("Time: " + hours + ":" + minutes + ":" + seconds);
+            //lvlButton.setText("Time: " + hours + ":" + minutes + ":" + seconds);
+            lvlButton.setText(String.format("Time: %02d : %02d : %02d", ((seconds/60)/60)%60, (seconds/60)%60, seconds%60));
         });
     }
    
