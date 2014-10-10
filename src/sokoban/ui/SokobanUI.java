@@ -117,14 +117,14 @@ public class SokobanUI extends Pane {
     private SokobanEventHandler eventHandler;
     private SokobanErrorHandler errorHandler;
     private SokobanDocumentManager docManager;
+    
     GridRenderer gridRenderer = new GridRenderer();
     SokobanGameStateManager gsm;
     private boolean canMove;
     ArrayList<List<Integer>> redPointsInLevel = new ArrayList<>();
-    
     ArrayList<List<Integer>> sokobanPosition = new ArrayList<>();
     public Timer timer = new Timer();
-
+    ArrayList<int[][]> historyOfGrids = new ArrayList<>();
 
     public SokobanUI() {
         gsm = new SokobanGameStateManager(this); //only can be made once.
@@ -181,57 +181,67 @@ public class SokobanUI extends Pane {
         mainPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 //System.out.println("Key Pressed: " + ke.getCode());
-                
+
                 //if statement to repaint red point if guy went over it
                 boolean isOverRedPoint = false;
-                for(int k = 0; k < redPointsInLevel.size(); k++){
-                    if(sokobanPosition.get(0).equals(redPointsInLevel.get(k))){
+                for (int k = 0; k < redPointsInLevel.size(); k++) {
+                    if (sokobanPosition.get(0).equals(redPointsInLevel.get(k))) {
                         isOverRedPoint = true;
                     }
                 }
                 //System.out.println("over red pt: " + isOverRedPoint);
                 System.out.println("sok loc:" + sokobanPosition);
                 System.out.println("red loc:" + redPointsInLevel);
-                
+
+                if (ke.getCode().equals(KeyCode.U)) {
+                    undoEachMove();
+                }
                 
                 boolean nextIsBox = false;
                 outerloop:
                 if (ke.getCode().equals(KeyCode.UP)) {
+                    //add current grid to the arraylist, when need to undo
+                    int[][] temp = new int[gsm.getGridColumns()][gsm.getGridRows()];
+                    //add current grid to the arraylist, when need to undo
+                    for (int i = 0; i < gsm.getGridColumns(); i++) {
+                        for (int j = 0; j < gsm.getGridRows(); j++) {
+                            temp[i][j] = gsm.getGrid()[i][j];
+                        }
+                    }
+                    historyOfGrids.add(temp);
+                    
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
                             if (gsm.getGrid()[i][j] == 4) {
-                                
+
                                 //gsm.getGrid()[i][j] = 0;
                                 nextIsBox = checkUp(gsm.getGrid(), i, j);
                                 //check if can move, then check if next is box
                                 if (canMove == true && nextIsBox == false) {
-                                    sokobanPosition.add(0, Arrays.asList(i,j - 1));
-                                    if(isOverRedPoint == true){
-                                       gsm.getGrid()[i][j] = 3;
-                                       gsm.getGrid()[i][j - 1] = 4; 
-                                    }
-                                    else{
+                                    sokobanPosition.add(0, Arrays.asList(i, j - 1));
+                                    if (isOverRedPoint == true) {
+                                        gsm.getGrid()[i][j] = 3;
+                                        gsm.getGrid()[i][j - 1] = 4;
+                                    } else {
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i][j - 1] = 4;
                                     }
                                 }
                                 if (canMove == true && nextIsBox == true) {
-                                    sokobanPosition.add(0, Arrays.asList(i,j - 1));
-                                    if(isOverRedPoint == true){
-                                       gsm.getGrid()[i][j] = 3;
-                                       gsm.getGrid()[i][j - 2] = 2;
-                                       gsm.getGrid()[i][j - 1] = 4; 
-                                    }
-                                    else{
+                                    sokobanPosition.add(0, Arrays.asList(i, j - 1));
+                                    if (isOverRedPoint == true) {
+                                        gsm.getGrid()[i][j] = 3;
+                                        gsm.getGrid()[i][j - 2] = 2;
+                                        gsm.getGrid()[i][j - 1] = 4;
+                                    } else {
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i][j - 2] = 2;
                                         gsm.getGrid()[i][j - 1] = 4;
                                     }
                                 }
-                                
+
                                 //make boolean class var, switch statement, if true, check case, 2 cases
                                 //make second copy of grid, everytime he moves compare with old grid, to repaint red dots
-
                                 System.out.println("sok loc:" + sokobanPosition);
                                 System.out.println("red loc:" + redPointsInLevel);
                                 gridRenderer.repaint(gsm.getGridColumns(), gsm.getGridRows(), gsm.getGrid());
@@ -247,33 +257,41 @@ public class SokobanUI extends Pane {
                     //then call grid rend to repaint
                 }
                 if (ke.getCode().equals(KeyCode.DOWN)) {
+                    //add current grid to the arraylist, when need to undo
+                    int[][] temp = new int[gsm.getGridColumns()][gsm.getGridRows()];
+                    //add current grid to the arraylist, when need to undo
+                    for (int i = 0; i < gsm.getGridColumns(); i++) {
+                        for (int j = 0; j < gsm.getGridRows(); j++) {
+                            temp[i][j] = gsm.getGrid()[i][j];
+                        }
+                    }
+                    historyOfGrids.add(temp);
+                    
                     outerloop:
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
                             if (gsm.getGrid()[i][j] == 4) {
-                                
+
                                 nextIsBox = checkDown(gsm.getGrid(), i, j);
                                 //gsm.getGrid()[i][j] = 0;
                                 //check if can move, then check if next is box
                                 if (canMove == true && nextIsBox == false) {
-                                    sokobanPosition.add(0, Arrays.asList(i,j + 1));
-                                    if(isOverRedPoint){
-                                       gsm.getGrid()[i][j] = 3;
-                                       gsm.getGrid()[i][j + 1] = 4; 
-                                    }
-                                    else{
+                                    sokobanPosition.add(0, Arrays.asList(i, j + 1));
+                                    if (isOverRedPoint) {
+                                        gsm.getGrid()[i][j] = 3;
+                                        gsm.getGrid()[i][j + 1] = 4;
+                                    } else {
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i][j + 1] = 4;
                                     }
                                 }
                                 if (canMove == true && nextIsBox == true) {
-                                    sokobanPosition.add(0, Arrays.asList(i,j + 1));
-                                    if(isOverRedPoint){
-                                       gsm.getGrid()[i][j] = 3;
-                                       gsm.getGrid()[i][j + 2] = 2;
-                                       gsm.getGrid()[i][j + 1] = 4; 
-                                    }
-                                    else{
+                                    sokobanPosition.add(0, Arrays.asList(i, j + 1));
+                                    if (isOverRedPoint) {
+                                        gsm.getGrid()[i][j] = 3;
+                                        gsm.getGrid()[i][j + 2] = 2;
+                                        gsm.getGrid()[i][j + 1] = 4;
+                                    } else {
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i][j + 2] = 2;
                                         gsm.getGrid()[i][j + 1] = 4;
@@ -289,33 +307,42 @@ public class SokobanUI extends Pane {
                     }
                 }
                 if (ke.getCode().equals(KeyCode.LEFT)) {
+                    int[][] temp = new int[gsm.getGridColumns()][gsm.getGridRows()];
+                    //add current grid to the arraylist, when need to undo
+                    for (int i = 0; i < gsm.getGridColumns(); i++) {
+                        for (int j = 0; j < gsm.getGridRows(); j++) {
+                            temp[i][j] = gsm.getGrid()[i][j];
+                        }
+                    }
+                    historyOfGrids.add(temp);
+                    //add current grid to the arraylist, when need to undo
+                 
+                    
                     outerloop:
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
                             if (gsm.getGrid()[i][j] == 4) {
-                                
+
                                 nextIsBox = checkLeft(gsm.getGrid(), i, j);
                                 //gsm.getGrid()[i][j] = 0;
                                 //check if can move, then check if next is box
                                 if (canMove == true && nextIsBox == false) {
-                                    sokobanPosition.add(0, Arrays.asList(i - 1,j));
-                                    if(isOverRedPoint){
-                                       gsm.getGrid()[i][j] = 3;
-                                       gsm.getGrid()[i - 1][j] = 4; 
-                                    }
-                                    else{
+                                    sokobanPosition.add(0, Arrays.asList(i - 1, j));
+                                    if (isOverRedPoint) {
+                                        gsm.getGrid()[i][j] = 3;
+                                        gsm.getGrid()[i - 1][j] = 4;
+                                    } else {
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i - 1][j] = 4;
                                     }
                                 }
                                 if (canMove == true && nextIsBox == true) {
-                                    sokobanPosition.add(0, Arrays.asList(i - 1,j));
-                                    if(isOverRedPoint){
-                                       gsm.getGrid()[i][j] = 3;
-                                       gsm.getGrid()[i - 2][j] = 2;
-                                       gsm.getGrid()[i - 1][j] = 4; 
-                                    }
-                                    else{
+                                    sokobanPosition.add(0, Arrays.asList(i - 1, j));
+                                    if (isOverRedPoint) {
+                                        gsm.getGrid()[i][j] = 3;
+                                        gsm.getGrid()[i - 2][j] = 2;
+                                        gsm.getGrid()[i - 1][j] = 4;
+                                    } else {
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i - 2][j] = 2;
                                         gsm.getGrid()[i - 1][j] = 4;
@@ -331,6 +358,16 @@ public class SokobanUI extends Pane {
                     }
                 }
                 if (ke.getCode().equals(KeyCode.RIGHT)) {
+                    int[][] temp = new int[gsm.getGridColumns()][gsm.getGridRows()];
+                    //add current grid to the arraylist, when need to undo
+                    for (int i = 0; i < gsm.getGridColumns(); i++) {
+                        for (int j = 0; j < gsm.getGridRows(); j++) {
+                            temp[i][j] = gsm.getGrid()[i][j];
+                        }
+                    }
+                    historyOfGrids.add(temp);
+                    System.out.println("grid in right key" + temp);
+                    
                     outerloop:
                     for (int i = 0; i < gsm.getGridColumns(); i++) {
                         for (int j = 0; j < gsm.getGridRows(); j++) {
@@ -338,24 +375,22 @@ public class SokobanUI extends Pane {
                                 nextIsBox = checkRight(gsm.getGrid(), i, j);
                                 //check if can move, then check if next is box
                                 if (canMove == true && nextIsBox == false) {
-                                    sokobanPosition.add(0, Arrays.asList(i + 1,j));
-                                    if(isOverRedPoint){
-                                       gsm.getGrid()[i][j] = 3;
-                                       gsm.getGrid()[i + 1][j] = 4; 
-                                    }
-                                    else{
+                                    sokobanPosition.add(0, Arrays.asList(i + 1, j));
+                                    if (isOverRedPoint) {
+                                        gsm.getGrid()[i][j] = 3;
+                                        gsm.getGrid()[i + 1][j] = 4;
+                                    } else {
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i + 1][j] = 4;
                                     }
                                 }
                                 if (canMove == true && nextIsBox == true) {
-                                    sokobanPosition.add(0, Arrays.asList(i + 1,j));
-                                    if(isOverRedPoint){
+                                    sokobanPosition.add(0, Arrays.asList(i + 1, j));
+                                    if (isOverRedPoint) {
                                         gsm.getGrid()[i][j] = 3;
                                         gsm.getGrid()[i + 2][j] = 2;
                                         gsm.getGrid()[i + 1][j] = 4;
-                                    }
-                                    else{
+                                    } else {
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i + 2][j] = 2;
                                         gsm.getGrid()[i + 1][j] = 4;
@@ -368,18 +403,18 @@ public class SokobanUI extends Pane {
                         }
                     }
                 }
-          
+
                 //CHECK IF WON
                 //now see if all boxes are on all red points
                 //make an arraylist of boxes moving as well? how to undo?
                 //loop, if all red points in array have boxes on top the win dialog should pop up
                 int redPointsCounter = 0;
-                for(int t = 0; t < redPointsInLevel.size(); t++){
-                    if(gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)] == 2){
+                for (int t = 0; t < redPointsInLevel.size(); t++) {
+                    if (gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)] == 2) {
                         redPointsCounter++;
-                    }  
+                    }
                 }
-                if(redPointsCounter == redPointsInLevel.size()){
+                if (redPointsCounter == redPointsInLevel.size()) {
                     //POP BOX TO WIN MESSAGE
                     System.out.println("YOU WIN!");
                     gsm.wins[gsm.getGameState()]++;
@@ -390,68 +425,64 @@ public class SokobanUI extends Pane {
                     docManager.addGameResultToStatsPage(gsm.getGameInProgress());
                     respondToWin(primaryStage);
                 }
-                
-                //CHECK IF LOST
-                //how to check if lost?
-                //if (!gsm.isGameOver()) {
-                    outerloop:
-                    for (int i = 0; i < gsm.getGridColumns(); i++) {
-                        for (int j = 0; j < gsm.getGridRows(); j++) {
-                            if (gsm.getGrid()[i][j] == 2) {
-                                System.out.println("box pos:" + gsm.getGrid()[i][j]);
-                                
-                                //boolean up = checkUp(gsm.getGrid(), i, j);
-                                boolean up = false, down = false, left = false, right = false;
-                                
-                                if(gsm.getGrid()[i][j - 1] == 0 || gsm.getGrid()[i][j - 1] == 3 
-                                        || gsm.getGrid()[i][j - 1] == 4){
-                                    up = true;
-                                }
-                                if(gsm.getGrid()[i][j + 1] == 0 || gsm.getGrid()[i][j + 1] == 3 
-                                        || gsm.getGrid()[i][j + 1] == 4){
-                                    down = true;
-                                }
-                                if(gsm.getGrid()[i - 1][j] == 0 || gsm.getGrid()[i - 1][j] == 3
-                                        || gsm.getGrid()[i - 1][j] == 4){
-                                    left = true;
-                                }
-                                if(gsm.getGrid()[i + 1][j] == 0 || gsm.getGrid()[i + 1][j] == 3 
-                                        || gsm.getGrid()[i + 1][j] == 4){
-                                    right = true;
-                                }
-                                //boolean down = checkDown(gsm.getGrid(), i, j);
-                                //boolean left = checkLeft(gsm.getGrid(), i, j);
-                                //boolean right = checkRight(gsm.getGrid(), i, j);
-                                boolean isRedPoint = false;
-                                for (int t = 0; t < redPointsInLevel.size(); t++) {
-                                    if (gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)] == 
-                                            gsm.getGrid()[i][j]) {
-                                        isRedPoint = true;
-                                    }
-                                }
 
-                                if (((up == false && left == false) || (down == false && right == false) || 
-                                        (up == false && right == false) || (down == false && left == false))
-                                        //and not red point
-                                        && isRedPoint == false) {
-                                    System.out.println("YOU LOSE!");
-                                    respondToLoss(primaryStage);
-                                    break outerloop;
+                outerloop:
+                for (int i = 0; i < gsm.getGridColumns(); i++) {
+                    for (int j = 0; j < gsm.getGridRows(); j++) {
+                        if (gsm.getGrid()[i][j] == 2) {
+                            System.out.println("box pos:" + gsm.getGrid()[i][j]);
+
+                            //boolean up = checkUp(gsm.getGrid(), i, j);
+                            boolean up = false, down = false, left = false, right = false;
+
+                            if (gsm.getGrid()[i][j - 1] == 0 || gsm.getGrid()[i][j - 1] == 3
+                                    || gsm.getGrid()[i][j - 1] == 4) {
+                                up = true;
+                            }
+                            if (gsm.getGrid()[i][j + 1] == 0 || gsm.getGrid()[i][j + 1] == 3
+                                    || gsm.getGrid()[i][j + 1] == 4) {
+                                down = true;
+                            }
+                            if (gsm.getGrid()[i - 1][j] == 0 || gsm.getGrid()[i - 1][j] == 3
+                                    || gsm.getGrid()[i - 1][j] == 4) {
+                                left = true;
+                            }
+                            if (gsm.getGrid()[i + 1][j] == 0 || gsm.getGrid()[i + 1][j] == 3
+                                    || gsm.getGrid()[i + 1][j] == 4) {
+                                right = true;
+                            }
+                                //boolean down = checkDown(gsm.getGrid(), i, j);
+                            //boolean left = checkLeft(gsm.getGrid(), i, j);
+                            //boolean right = checkRight(gsm.getGrid(), i, j);
+                            boolean isRedPoint = false;
+                            for (int t = 0; t < redPointsInLevel.size(); t++) {
+                                if (gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)]
+                                        == gsm.getGrid()[i][j]) {
+                                    isRedPoint = true;
                                 }
                             }
+
+                            if (((up == false && left == false) || (down == false && right == false)
+                                    || (up == false && right == false) || (down == false && left == false))
+                                    //and not red point
+                                    && isRedPoint == false) {
+                                System.out.println("YOU LOSE!");
+                                respondToLoss(primaryStage);
+                                break outerloop;
+                            }
                         }
-                    //}
+                    }
                 }
             }
-            
-                public void respondToLoss(Stage primaryStage) {
+
+            public void respondToLoss(Stage primaryStage) {
                 // ENGLIS IS THE DEFAULT
                 String options[] = new String[]{"Yes", "No"};
                 PropertiesManager props = PropertiesManager.getPropertiesManager();
                 options[0] = props.getProperty(SokobanPropertyType.DEFAULT_YES_TEXT);
                 options[1] = props.getProperty(SokobanPropertyType.DEFAULT_NO_TEXT);
                 //String verifyExit = props.getProperty(SokobanPropertyType.WIN_DISPLAY_TEXT);
-                
+
                 String winImagePath = props
                         .getProperty(SokobanPropertyType.LOST_IMAGE_NAME);
                 props.addProperty(SokobanPropertyType.INSETS, "5");
@@ -490,7 +521,7 @@ public class SokobanUI extends Pane {
                 });
 
             }
-            
+
             public void respondToWin(Stage primaryStage) {
                 // ENGLIS IS THE DEFAULT
                 String options[] = new String[]{"Yes", "No"};
@@ -498,7 +529,7 @@ public class SokobanUI extends Pane {
                 options[0] = props.getProperty(SokobanPropertyType.DEFAULT_YES_TEXT);
                 options[1] = props.getProperty(SokobanPropertyType.DEFAULT_NO_TEXT);
                 //String verifyExit = props.getProperty(SokobanPropertyType.WIN_DISPLAY_TEXT);
-                
+
                 String winImagePath = props
                         .getProperty(SokobanPropertyType.WIN_IMAGE_NAME);
                 props.addProperty(SokobanPropertyType.INSETS, "5");
@@ -759,7 +790,7 @@ public class SokobanUI extends Pane {
         gamePanel.setCenter(gridRenderer);
 
     }
-    
+
     private void initHelpPane() {
         // WE'LL DISPLAY ALL STATS IN A JEditorPane
         statsPane = new JEditorPane();
@@ -781,7 +812,8 @@ public class SokobanUI extends Pane {
         statsScrollPane.setFitToWidth(true);
 
     }
-        private void loadPage(JEditorPane jep, SokobanPropertyType fileProperty) {
+
+    private void loadPage(JEditorPane jep, SokobanPropertyType fileProperty) {
         // GET THE FILE NAME
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         String fileName = props.getProperty(fileProperty);
@@ -792,7 +824,20 @@ public class SokobanUI extends Pane {
         } catch (IOException ioe) {
             errorHandler.processError(SokobanPropertyType.INVALID_URL_ERROR_TEXT);
         }
-    
+    }
+
+    //go through all moves and revert 
+    //arraylist or stack of arrays[][] (of grids[][])
+    //when move push(gsm.getGrid())
+    //gsm.getGrid() = var.pop();
+       //method called in two places, one for u key in initmain and one for undo button in northtoolbar
+    private void undoEachMove() {
+        if (historyOfGrids.size() != 0) {
+            gsm.setGrid(historyOfGrids.get(historyOfGrids.size() - 1));
+            gridRenderer.repaint(gsm.getGridColumns(), gsm.getGridRows(), gsm.getGrid());
+            historyOfGrids.remove(historyOfGrids.size() - 1);
+        }
+
     }
 
     /**
@@ -805,7 +850,6 @@ public class SokobanUI extends Pane {
         northToolbar.setAlignment(Pos.CENTER);
         northToolbar.setPadding(marginlessInsets);
         northToolbar.setSpacing(10.0);
-        
 
         //BACK BUTTON
         gameButton = initToolbarButton(northToolbar,
@@ -827,17 +871,15 @@ public class SokobanUI extends Pane {
         statsButton = initToolbarButton(northToolbar,
                 SokobanPropertyType.STATS_IMG_NAME); //actually undo button
         //setTooltip(statsButton, SokobanPropertyType.STATS_TOOLTIP);
+        //when button clicked, simulate the u being pressed
 
         statsButton.setOnAction(new EventHandler<ActionEvent>() {
-
             @Override
             public void handle(ActionEvent event) {
-                // TODO Auto-generated method stub
-                eventHandler
-                        .respondToSwitchScreenRequest(SokobanUIState.VIEW_STATS_STATE);
+                undoEachMove();
             }
-
         });
+
         // STATS BUTTON
         helpButton = initToolbarButton(northToolbar,
                 SokobanPropertyType.HELP_IMG_NAME);
@@ -848,7 +890,7 @@ public class SokobanUI extends Pane {
             public void handle(ActionEvent event) {
                 eventHandler
                         .respondToSwitchScreenRequest(SokobanUIState.VIEW_HELP_STATE);
-                
+
             }
 
         });
@@ -857,10 +899,9 @@ public class SokobanUI extends Pane {
         Label timerLabel = new Label("Time: ");
         northToolbar.getChildren().add(timerLabel);
 
-        
         timer.schedule(new DisplayTime(timerLabel), 0, 1000);
         //exitButton = initToolbarButton(northToolbar,
-              // SokobanPropertyType.EXIT_IMG_NAME); //actually time button
+        // SokobanPropertyType.EXIT_IMG_NAME); //actually time button
         //setTooltip(exitButton, SokobanPropertyType.EXIT_TOOLTIP);
 //        exitButton.setOnAction(new EventHandler<ActionEvent>() {
 //
@@ -954,12 +995,12 @@ public class SokobanUI extends Pane {
             case VIEW_HELP_STATE:
                 props = PropertiesManager.getPropertiesManager();
                 primaryStage.setTitle(props.getProperty(SokobanPropertyType.STATS_PANE_TEXT));
-                mainPane.setCenter(statsScrollPane); 
+                mainPane.setCenter(statsScrollPane);
                 //takes timer out of toolbar
                 northToolbar.getChildren().remove(3);
                 docManager.addGameResultToStatsPage(gsm.getGameInProgress());
                 break;
-                
+
             case PLAY_GAME_STATE:
                 redPointsInLevel.clear();
                 mainPane.setCenter(gamePanel);
@@ -986,8 +1027,8 @@ public class SokobanUI extends Pane {
         }
         System.out.println(redPointsInLevel);
     }
-    
-    private void findSokobanPosition(){
+
+    private void findSokobanPosition() {
         for (int i = 0; i < gsm.getGridColumns(); i++) {
             for (int j = 0; j < gsm.getGridRows(); j++) {
                 if (gsm.getGrid()[i][j] == 4) {
