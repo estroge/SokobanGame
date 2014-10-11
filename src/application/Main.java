@@ -1,11 +1,13 @@
 package application;
 
+import javafx.animation.AnimationTimer;
 import properties_manager.PropertiesManager;
 import sokoban.ui.SokobanUI;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import sokoban.ui.GridRenderer;
 
 public class Main extends Application {
 
@@ -38,6 +40,20 @@ public class Main extends Application {
             Scene scene = new Scene(mainPane, mainPane.getWidth(), mainPane.getHeight());
             primaryStage.setScene(scene);
             primaryStage.show();
+            
+            new AnimationTimer(){
+
+                @Override
+                public void handle(long now) {
+                    if(root.getGSM().isGameInProgress() && root.getGSM().getGrid() != null){
+                        root.gridRenderer.repaint(); 
+                        if(GridRenderer.initShiftingVariables)
+                        root.checkForWin();
+                    }
+                }
+                
+            }.start();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -123,7 +123,7 @@ public class SokobanUI extends Pane {
     private SokobanErrorHandler errorHandler;
     private SokobanDocumentManager docManager;
     
-    GridRenderer gridRenderer = new GridRenderer();
+    public GridRenderer gridRenderer;// = new GridRenderer();
     SokobanGameStateManager gsm;
     private boolean canMove;
     ArrayList<List<Integer>> redPointsInLevel = new ArrayList<>();
@@ -131,6 +131,7 @@ public class SokobanUI extends Pane {
     ArrayList<List<Integer>> boxesInLevel = new ArrayList<>();
     public Timer timer;
     ArrayList<int[][]> historyOfGrids = new ArrayList<>();
+    public int isMoving[][];
     
     //audio files
     AudioClip winClip = new AudioClip("file:data/win.wav");
@@ -143,6 +144,8 @@ public class SokobanUI extends Pane {
     private String endOfGameTime;
 
     public SokobanUI() {
+        gridRenderer = new GridRenderer(this);
+        
         gsm = new SokobanGameStateManager(this); //only can be made once.
         eventHandler = new SokobanEventHandler(this);
         errorHandler = new SokobanErrorHandler(primaryStage);
@@ -150,6 +153,7 @@ public class SokobanUI extends Pane {
         initMainPane();
         initSplashScreen();
         //initSokobanUI(); //added this 
+        
     }
 
     public void SetStage(Stage stage) {
@@ -242,9 +246,13 @@ public class SokobanUI extends Pane {
                                 if (canMove == true && nextIsBox == false) {
                                     sokobanPosition.add(0, Arrays.asList(i, j - 1));
                                     if (isOverRedPoint == true) {
+                                        isMoving[i][j-1] = 1;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 3;
                                         gsm.getGrid()[i][j - 1] = 4;
                                     } else {
+                                        isMoving[i][j-1] = 1;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i][j - 1] = 4;
                                     }
@@ -252,10 +260,16 @@ public class SokobanUI extends Pane {
                                 if (canMove == true && nextIsBox == true) {
                                     sokobanPosition.add(0, Arrays.asList(i, j - 1));
                                     if (isOverRedPoint == true) {
+                                        isMoving[i][j-1] = 1;
+                                        isMoving[i][j-2] = 1;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 3;
                                         gsm.getGrid()[i][j - 2] = 2;
                                         gsm.getGrid()[i][j - 1] = 4;
                                     } else {
+                                        isMoving[i][j-1] = 1;
+                                        isMoving[i][j-2] = 1;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i][j - 2] = 2;
                                         gsm.getGrid()[i][j - 1] = 4;
@@ -304,9 +318,13 @@ public class SokobanUI extends Pane {
                                 if (canMove == true && nextIsBox == false) {
                                     sokobanPosition.add(0, Arrays.asList(i, j + 1));
                                     if (isOverRedPoint) {
+                                        isMoving[i][j+1] = 3;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 3;
                                         gsm.getGrid()[i][j + 1] = 4;
                                     } else {
+                                        isMoving[i][j+1] = 3;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i][j + 1] = 4;
                                     }
@@ -314,10 +332,16 @@ public class SokobanUI extends Pane {
                                 if (canMove == true && nextIsBox == true) {
                                     sokobanPosition.add(0, Arrays.asList(i, j + 1));
                                     if (isOverRedPoint) {
+                                        isMoving[i][j+1] = 3;
+                                        isMoving[i][j+2] = 3;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 3;
                                         gsm.getGrid()[i][j + 2] = 2;
                                         gsm.getGrid()[i][j + 1] = 4;
                                     } else {
+                                        isMoving[i][j+1] = 3;
+                                        isMoving[i][j+2] = 3;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i][j + 2] = 2;
                                         gsm.getGrid()[i][j + 1] = 4;
@@ -360,9 +384,13 @@ public class SokobanUI extends Pane {
                                 if (canMove == true && nextIsBox == false) {
                                     sokobanPosition.add(0, Arrays.asList(i - 1, j));
                                     if (isOverRedPoint) {
+                                        isMoving[i-1][j] = 2;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 3;
                                         gsm.getGrid()[i - 1][j] = 4;
                                     } else {
+                                        isMoving[i-1][j] = 2;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i - 1][j] = 4;
                                     }
@@ -370,10 +398,16 @@ public class SokobanUI extends Pane {
                                 if (canMove == true && nextIsBox == true) {
                                     sokobanPosition.add(0, Arrays.asList(i - 1, j));
                                     if (isOverRedPoint) {
+                                        isMoving[i-1][j] = 2;
+                                        isMoving[i-2][j] = 2;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 3;
                                         gsm.getGrid()[i - 2][j] = 2;
                                         gsm.getGrid()[i - 1][j] = 4;
                                     } else {
+                                        isMoving[i-1][j] = 2;
+                                        isMoving[i-2][j] = 2;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i - 2][j] = 2;
                                         gsm.getGrid()[i - 1][j] = 4;
@@ -413,9 +447,13 @@ public class SokobanUI extends Pane {
                                 if (canMove == true && nextIsBox == false) {
                                     sokobanPosition.add(0, Arrays.asList(i + 1, j));
                                     if (isOverRedPoint) {
+                                        isMoving[i+1][j] = 4;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 3;
                                         gsm.getGrid()[i + 1][j] = 4;
                                     } else {
+                                        isMoving[i+1][j] = 4;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i + 1][j] = 4;
                                     }
@@ -423,10 +461,16 @@ public class SokobanUI extends Pane {
                                 if (canMove == true && nextIsBox == true) {
                                     sokobanPosition.add(0, Arrays.asList(i + 1, j));
                                     if (isOverRedPoint) {
+                                        isMoving[i+1][j] = 4;
+                                        isMoving[i+2][j] = 4;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 3;
                                         gsm.getGrid()[i + 2][j] = 2;
                                         gsm.getGrid()[i + 1][j] = 4;
                                     } else {
+                                        isMoving[i+1][j] = 4;
+                                        isMoving[i+2][j] = 4;
+                                        gridRenderer.initShiftingVariables = true;
                                         gsm.getGrid()[i][j] = 0;
                                         gsm.getGrid()[i + 2][j] = 2;
                                         gsm.getGrid()[i + 1][j] = 4;
@@ -447,136 +491,141 @@ public class SokobanUI extends Pane {
                 //now see if all boxes are on all red points
                 //make an arraylist of boxes moving as well? how to undo?
                 //loop, if all red points in array have boxes on top the win dialog should pop up
-                int redPointsCounter = 0;
-                for (int t = 0; t < redPointsInLevel.size(); t++) {
-                    if (gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)] == 2) {
-                        redPointsCounter++;
-                    }
-                }
-                if (redPointsCounter == redPointsInLevel.size()) {
-                    //POP BOX TO WIN MESSAGE
-                    System.out.println("YOU WIN!");
-                    gsm.wins[gsm.getLevelState()]++;
-                    // TODO : also check if the current time is faster than the fastest time and chenge it if it is
-                    //set game is over
-
-                    
-                    //MAKE WINNING SOUND!
-                    winClip.play();
-                    historyOfGrids.clear();
-                    //initaudio load all audio files, instance vars up top
-                    //call stop, has to be an instance var 
-
-                    endOfGameTime = timertask.toString();
-                    System.out.println("timer: " + endOfGameTime);
-                    timer.cancel();
-                    timer.purge();
-
-                    //check if fastest
-                    
-                    //check if fastest
-                    for(int i = 1; i < gsm.fastest_win.length; i++){
-                        if(gsm.fastest_win[i] == null){
-                            gsm.fastest_win[i] = endOfGameTime;
-                        }
-                        if(endOfGameTime.compareTo(gsm.fastest_win[i]) == 1){
-                            gsm.fastest_win[i] = endOfGameTime;
-                        }
-                    }
-                    
-                    docManager.addGameResultToStatsPage(gsm.getGameInProgress());
-
-                    gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
-                    respondToWin(primaryStage);
-                    
-
-                }
-
-                //CHECK IF LOST
-                //have to check for everybox not just one
-                //for each box in the grid if condition true 
-//                for (int t = 0; t < boxesInLevel.size(); t++) {
-//                    boolean up = false, down = false, left = false, right = false;
-//
-//                    if (gsm.getGrid()[boxesInLevel.get(t).get(0)][boxesInLevel.get(t).get(1) - 1] != 1) {
-//                        up = true;
-//                    }
-//                    if (gsm.getGrid()[boxesInLevel.get(t).get(0)][boxesInLevel.get(t).get(1) + 1] != 1) {
-//                        down = true;
-//                    }
-//                    if (gsm.getGrid()[boxesInLevel.get(t).get(0) - 1][boxesInLevel.get(t).get(1)] != 1) {
-//                        left = true;
-//                    }
-//                    if (gsm.getGrid()[boxesInLevel.get(t).get(0) + 1][boxesInLevel.get(t).get(1) - 1] != 1) {
-//                        right = true;
-//                    }
-//                    boolean isRedPoint = false;
-//                    for (int y = 0; y < redPointsInLevel.size(); y++) {
-//                        if (gsm.getGrid()[redPointsInLevel.get(y).get(0)][redPointsInLevel.get(y).get(1)]
-//                                == gsm.getGrid()[boxesInLevel.get(t).get(0)][boxesInLevel.get(t).get(1)]) {
-//                            isRedPoint = true;
-//                        }
-//                    }
-//                    if (((up == false && left == false) || (down == false && right == false)
-//                            || (up == false && right == false) || (down == false && left == false))
-//                            //and not red point
-//                            && isRedPoint == false) {
-//                        System.out.println("YOU LOSE!");
-//                        gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
-//                        respondToLoss(primaryStage);
-//
+//                int redPointsCounter = 0;
+//                for (int t = 0; t < redPointsInLevel.size(); t++) {
+//                    if (gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)] == 2) {
+//                        redPointsCounter++;
 //                    }
 //                }
-                //TODO: CHECK IF LOST
-                for (int i = 0; i < gsm.getGridColumns(); i++) {
-                    for (int j = 0; j < gsm.getGridRows(); j++) {
-                        if (gsm.getGrid()[i][j] == 2) {
-                            //System.out.println("box pos:" + gsm.getGrid()[i][j]);
-
-                            //boolean up = checkUp(gsm.getGrid(), i, j);
-                            boolean up = false, down = false, left = false, right = false;
-
-                            if (gsm.getGrid()[i][j - 1] != 1) {
-                                up = true;
-                            }
-                            if (gsm.getGrid()[i][j + 1] != 1) {
-                                down = true;
-                            }
-                            if (gsm.getGrid()[i - 1][j] != 1) {
-                                left = true;
-                            }
-                            if (gsm.getGrid()[i + 1][j] != 1) {
-                                right = true;
-                            }
-
-                            boolean isRedPoint = false;
-                            for (int t = 0; t < redPointsInLevel.size(); t++) {
-                                if (gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)]
-                                        == gsm.getGrid()[i][j]) {
-                                    isRedPoint = true;
-                                }
-                            }
-
-                            if (((up == false && left == false) || (down == false && right == false)
-                                    || (up == false && right == false) || (down == false && left == false))
-                                    //and not red point
-                                    && isRedPoint == false) {
-                                System.out.println("YOU LOSE!");
-                                gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
-                                historyOfGrids.clear();
-                                loseClip.play(); 
-                                respondToLoss(primaryStage);
-
-                            }
-                        }
-                    }
-                }
+//                if (redPointsCounter == redPointsInLevel.size()) {
+//                    //POP BOX TO WIN MESSAGE
+//                    System.out.println("YOU WIN!");
+//                    gsm.wins[gsm.getLevelState()]++;
+//                    // TODO : also check if the current time is faster than the fastest time and chenge it if it is
+//                    //set game is over
+//
+//                    
+//                    //MAKE WINNING SOUND!
+//                    winClip.play();
+//                    historyOfGrids.clear();
+//                    //initaudio load all audio files, instance vars up top
+//                    //call stop, has to be an instance var 
+//
+//                    endOfGameTime = timertask.toString();
+//                    System.out.println("timer: " + endOfGameTime);
+//                    timer.cancel();
+//                    timer.purge();
+//
+//                    //check if fastest
+//                    
+//                    //check if fastest
+//                    for(int i = 1; i < gsm.fastest_win.length; i++){
+//                        if(gsm.fastest_win[i] == null){
+//                            gsm.fastest_win[i] = endOfGameTime;
+//                        }
+//                        if(endOfGameTime.compareTo(gsm.fastest_win[i]) == 1){
+//                            gsm.fastest_win[i] = endOfGameTime;
+//                        }
+//                    }
+//                    
+//                    docManager.addGameResultToStatsPage(gsm.getGameInProgress());
+//
+//                    gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
+//                    respondToWin(primaryStage);
+//                    
+//
+//                }
+//
+//                //CHECK IF LOST
+//                //have to check for everybox not just one
+//                //for each box in the grid if condition true 
+////                for (int t = 0; t < boxesInLevel.size(); t++) {
+////                    boolean up = false, down = false, left = false, right = false;
+////
+////                    if (gsm.getGrid()[boxesInLevel.get(t).get(0)][boxesInLevel.get(t).get(1) - 1] != 1) {
+////                        up = true;
+////                    }
+////                    if (gsm.getGrid()[boxesInLevel.get(t).get(0)][boxesInLevel.get(t).get(1) + 1] != 1) {
+////                        down = true;
+////                    }
+////                    if (gsm.getGrid()[boxesInLevel.get(t).get(0) - 1][boxesInLevel.get(t).get(1)] != 1) {
+////                        left = true;
+////                    }
+////                    if (gsm.getGrid()[boxesInLevel.get(t).get(0) + 1][boxesInLevel.get(t).get(1) - 1] != 1) {
+////                        right = true;
+////                    }
+////                    boolean isRedPoint = false;
+////                    for (int y = 0; y < redPointsInLevel.size(); y++) {
+////                        if (gsm.getGrid()[redPointsInLevel.get(y).get(0)][redPointsInLevel.get(y).get(1)]
+////                                == gsm.getGrid()[boxesInLevel.get(t).get(0)][boxesInLevel.get(t).get(1)]) {
+////                            isRedPoint = true;
+////                        }
+////                    }
+////                    if (((up == false && left == false) || (down == false && right == false)
+////                            || (up == false && right == false) || (down == false && left == false))
+////                            //and not red point
+////                            && isRedPoint == false) {
+////                        System.out.println("YOU LOSE!");
+////                        gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
+////                        respondToLoss(primaryStage);
+////
+////                    }
+////                }
+//                //TODO: CHECK IF LOST
+//                for (int i = 0; i < gsm.getGridColumns(); i++) {
+//                    for (int j = 0; j < gsm.getGridRows(); j++) {
+//                        if (gsm.getGrid()[i][j] == 2) {
+//                            //System.out.println("box pos:" + gsm.getGrid()[i][j]);
+//
+//                            //boolean up = checkUp(gsm.getGrid(), i, j);
+//                            boolean up = false, down = false, left = false, right = false;
+//
+//                            if (gsm.getGrid()[i][j - 1] != 1) {
+//                                up = true;
+//                            }
+//                            if (gsm.getGrid()[i][j + 1] != 1) {
+//                                down = true;
+//                            }
+//                            if (gsm.getGrid()[i - 1][j] != 1) {
+//                                left = true;
+//                            }
+//                            if (gsm.getGrid()[i + 1][j] != 1) {
+//                                right = true;
+//                            }
+//
+//                            boolean isRedPoint = false;
+//                            for (int t = 0; t < redPointsInLevel.size(); t++) {
+//                                if (gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)]
+//                                        == gsm.getGrid()[i][j]) {
+//                                    isRedPoint = true;
+//                                }
+//                            }
+//
+//                            if (((up == false && left == false) || (down == false && right == false)
+//                                    || (up == false && right == false) || (down == false && left == false))
+//                                    //and not red point
+//                                    && isRedPoint == false) {
+//                                System.out.println("YOU LOSE!");
+//                                gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
+//                                historyOfGrids.clear();
+//                                loseClip.play(); 
+//                                respondToLoss(primaryStage);
+//
+//                            }
+//                        }
+//                    }
+//                }
                 
             }
+            
 
 
 
-            public void respondToLoss(Stage primaryStage) {
+            
+        });
+    }
+    
+    public void respondToLoss(Stage primaryStage) {
                 // ENGLIS IS THE DEFAULT
                 String options[] = new String[]{"Yes", "No"};
                 PropertiesManager props = PropertiesManager.getPropertiesManager();
@@ -782,7 +831,136 @@ public class SokobanUI extends Pane {
                     return false;
                 }
             }
-        });
+    
+    public void checkForWin(){
+    //CHECK IF WON
+                //now see if all boxes are on all red points
+                //make an arraylist of boxes moving as well? how to undo?
+                //loop, if all red points in array have boxes on top the win dialog should pop up
+                int redPointsCounter = 0;
+                for (int t = 0; t < redPointsInLevel.size(); t++) {
+                    if (gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)] == 2) {
+                        redPointsCounter++;
+                    }
+                }
+                if (redPointsCounter == redPointsInLevel.size()) {
+                    //POP BOX TO WIN MESSAGE
+                    System.out.println("YOU WIN!");
+                    gsm.wins[gsm.getLevelState()]++;
+                    // TODO : also check if the current time is faster than the fastest time and chenge it if it is
+                    //set game is over
+
+                    
+                    //MAKE WINNING SOUND!
+                    winClip.play();
+                    historyOfGrids.clear();
+                    //initaudio load all audio files, instance vars up top
+                    //call stop, has to be an instance var 
+
+                    endOfGameTime = timertask.toString();
+                    System.out.println("timer: " + endOfGameTime);
+                    timer.cancel();
+                    timer.purge();
+
+                    //check if fastest
+                    
+                    //check if fastest
+                    for(int i = 1; i < gsm.fastest_win.length; i++){
+                        if(gsm.fastest_win[i] == null){
+                            gsm.fastest_win[i] = endOfGameTime;
+                        }
+                        if(endOfGameTime.compareTo(gsm.fastest_win[i]) == 1){
+                            gsm.fastest_win[i] = endOfGameTime;
+                        }
+                    }
+                    
+                    docManager.addGameResultToStatsPage(gsm.getGameInProgress());
+
+                    gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
+                    respondToWin(primaryStage);
+                    
+
+                }
+
+                //CHECK IF LOST
+                //have to check for everybox not just one
+                //for each box in the grid if condition true 
+//                for (int t = 0; t < boxesInLevel.size(); t++) {
+//                    boolean up = false, down = false, left = false, right = false;
+//
+//                    if (gsm.getGrid()[boxesInLevel.get(t).get(0)][boxesInLevel.get(t).get(1) - 1] != 1) {
+//                        up = true;
+//                    }
+//                    if (gsm.getGrid()[boxesInLevel.get(t).get(0)][boxesInLevel.get(t).get(1) + 1] != 1) {
+//                        down = true;
+//                    }
+//                    if (gsm.getGrid()[boxesInLevel.get(t).get(0) - 1][boxesInLevel.get(t).get(1)] != 1) {
+//                        left = true;
+//                    }
+//                    if (gsm.getGrid()[boxesInLevel.get(t).get(0) + 1][boxesInLevel.get(t).get(1) - 1] != 1) {
+//                        right = true;
+//                    }
+//                    boolean isRedPoint = false;
+//                    for (int y = 0; y < redPointsInLevel.size(); y++) {
+//                        if (gsm.getGrid()[redPointsInLevel.get(y).get(0)][redPointsInLevel.get(y).get(1)]
+//                                == gsm.getGrid()[boxesInLevel.get(t).get(0)][boxesInLevel.get(t).get(1)]) {
+//                            isRedPoint = true;
+//                        }
+//                    }
+//                    if (((up == false && left == false) || (down == false && right == false)
+//                            || (up == false && right == false) || (down == false && left == false))
+//                            //and not red point
+//                            && isRedPoint == false) {
+//                        System.out.println("YOU LOSE!");
+//                        gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
+//                        respondToLoss(primaryStage);
+//
+//                    }
+//                }
+                //TODO: CHECK IF LOST
+                for (int i = 0; i < gsm.getGridColumns(); i++) {
+                    for (int j = 0; j < gsm.getGridRows(); j++) {
+                        if (gsm.getGrid()[i][j] == 2) {
+                            //System.out.println("box pos:" + gsm.getGrid()[i][j]);
+
+                            //boolean up = checkUp(gsm.getGrid(), i, j);
+                            boolean up = false, down = false, left = false, right = false;
+
+                            if (gsm.getGrid()[i][j - 1] != 1) {
+                                up = true;
+                            }
+                            if (gsm.getGrid()[i][j + 1] != 1) {
+                                down = true;
+                            }
+                            if (gsm.getGrid()[i - 1][j] != 1) {
+                                left = true;
+                            }
+                            if (gsm.getGrid()[i + 1][j] != 1) {
+                                right = true;
+                            }
+
+                            boolean isRedPoint = false;
+                            for (int t = 0; t < redPointsInLevel.size(); t++) {
+                                if (gsm.getGrid()[redPointsInLevel.get(t).get(0)][redPointsInLevel.get(t).get(1)]
+                                        == gsm.getGrid()[i][j]) {
+                                    isRedPoint = true;
+                                }
+                            }
+
+                            if (((up == false && left == false) || (down == false && right == false)
+                                    || (up == false && right == false) || (down == false && left == false))
+                                    //and not red point
+                                    && isRedPoint == false) {
+                                System.out.println("YOU LOSE!");
+                                gsm.setGameState(SokobanGameStateManager.SokobanGameState.GAME_OVER);
+                                historyOfGrids.clear();
+                                loseClip.play(); 
+                                respondToLoss(primaryStage);
+
+                            }
+                        }
+                    }
+                }
     }
 
     public void initSplashScreen() {
@@ -845,6 +1023,7 @@ public class SokobanUI extends Pane {
 
                     //didn't want this since in initSokobanUI it changes the workspace
                     //changeWorkspace(SokobanUIState.PLAY_GAME_STATE);
+                    isMoving = new int[getGSM().getGrid().length][getGSM().getGrid()[0].length];
                 }
             });
             levelSelectionPane.getChildren().add(levelButton);
@@ -888,7 +1067,7 @@ public class SokobanUI extends Pane {
 
     }
 
-    private void initGameScreen() {
+    public void initGameScreen() {
         gridRenderer.repaint(getGSM().getGridColumns(), getGSM().getGridRows(), getGSM().getGrid());
         gamePanel.setCenter(gridRenderer);
 
